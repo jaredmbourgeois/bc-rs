@@ -1,0 +1,6 @@
+# Pinned to the workspace's MSRV (the root Cargo.toml's `rust-version`) so a local build answers the question CI's
+# first matrix leg asks. CI overrides this per leg with RUSTUP_TOOLCHAIN, which takes precedence, so the matrix's
+# second leg — one pinned stable release, never the moving channel — still runs the newer compiler and clippy.
+[toolchain]
+channel = "1.85.0"
+components = ["clippy", "rustfmt", "rust-src"]

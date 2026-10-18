@@ -1,0 +1,7 @@
+# Only stable options, so the IDE formatter and `cargo fmt --check` cannot
+# disagree. An unstable option here would be silently ignored on stable and the
+# two would drift.
+style_edition = "2024"
+max_width = 100
+newline_style = "Unix"
+tab_spaces = 4

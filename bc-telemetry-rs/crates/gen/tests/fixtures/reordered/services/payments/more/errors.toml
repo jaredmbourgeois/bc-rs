@@ -1,0 +1,15 @@
+[error.card_expired]
+fields = { order_id = "string" }
+code = 2
+class = "refusal"
+description = "The card expired before the charge"
+
+[error.authorization_declined]
+fields = { processor_code = "string", order_id = "string" }
+code = 1
+class = "failure"
+description = "The processor declined the authorization"
+
+[module]
+name = "payments"
+schema_version = 1

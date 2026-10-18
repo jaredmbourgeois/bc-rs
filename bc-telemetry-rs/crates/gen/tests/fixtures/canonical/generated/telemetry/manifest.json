@@ -1,0 +1,329 @@
+{
+  "manifest_version": 2,
+  "generator": "bc-telemetry-gen 0.1.0",
+  "output": "generated/telemetry",
+  "modules": {
+    "ledger": {
+      "directory": "services/payments/ledger",
+      "schema_version": 1,
+      "spans": {},
+      "metrics": {
+        "entries_posted": {
+          "description": "Ledger entries posted",
+          "type": "counter",
+          "unit": "none",
+          "attributes": {}
+        }
+      },
+      "logs": {
+        "entry_posted": {
+          "description": "A ledger entry was posted",
+          "level": "info",
+          "fields": {
+            "account": "string"
+          }
+        }
+      },
+      "errors": {
+        "account_closed": {
+          "description": "The entry names an account that is closed",
+          "class": "refusal",
+          "code": 1,
+          "fields": {
+            "account": "string",
+            "metadata": "string"
+          }
+        }
+      },
+      "queries": {},
+      "dashboards": {},
+      "retired_codes": []
+    },
+    "payments": {
+      "directory": "services/payments",
+      "schema_version": 1,
+      "spans": {
+        "authorize": {
+          "description": "One authorization request to the card processor",
+          "kind": "client",
+          "attributes": {
+            "processor": "string"
+          },
+          "events": [
+            "processor_called"
+          ]
+        }
+      },
+      "metrics": {
+        "capture_success": {
+          "description": "Share of captures the processor accepted",
+          "type": "gauge",
+          "unit": "percent",
+          "attributes": {}
+        },
+        "response_size": {
+          "description": "Size of the processor's response body",
+          "type": "histogram",
+          "unit": "bytes",
+          "attributes": {}
+        },
+        "settlement_duration": {
+          "description": "Time from capture to settlement",
+          "type": "histogram",
+          "unit": "s",
+          "attributes": {
+            "processor": "string"
+          }
+        }
+      },
+      "logs": {
+        "processor_timeout": {
+          "description": "The processor did not answer in time",
+          "level": "warn",
+          "fields": {
+            "processor": "string",
+            "waited": "duration"
+          }
+        }
+      },
+      "errors": {
+        "authorization_declined": {
+          "description": "The processor declined the authorization",
+          "class": "failure",
+          "code": 1,
+          "fields": {
+            "order_id": "string",
+            "processor_code": "string"
+          }
+        },
+        "card_expired": {
+          "description": "The card expired before the charge",
+          "class": "refusal",
+          "code": 2,
+          "fields": {
+            "order_id": "string"
+          }
+        }
+      },
+      "queries": {
+        "response-bytes": {
+          "description": "Bytes received from the processor per hour",
+          "measure": "metric.payments.response_size",
+          "aggregation": "sum",
+          "window_seconds": 3600,
+          "group_by": []
+        },
+        "settlement-p90": {
+          "description": "90th-percentile settlement time per processor over fifteen minutes",
+          "measure": "metric.payments.settlement_duration",
+          "aggregation": "p90",
+          "window_seconds": 900,
+          "group_by": [
+            "processor"
+          ]
+        }
+      },
+      "dashboards": {
+        "payments-health": {
+          "title": "Payments health",
+          "panels": [
+            {
+              "title": "p90 settlement time by processor",
+              "source": "query.payments.settlement-p90",
+              "render": "timeseries"
+            },
+            {
+              "title": "Response bytes",
+              "source": "query.payments.response-bytes",
+              "render": "stat"
+            },
+            {
+              "title": "Checkouts per second",
+              "source": "query.store_server.checkout-rate",
+              "render": "timeseries"
+            },
+            {
+              "title": "Processor timeouts",
+              "source": "log.payments.processor_timeout",
+              "render": "logs"
+            }
+          ]
+        }
+      },
+      "retired_codes": []
+    },
+    "store_server": {
+      "directory": ".",
+      "schema_version": 1,
+      "spans": {
+        "checkout": {
+          "description": "One checkout flow, cart to confirmation",
+          "kind": "server",
+          "attributes": {
+            "cart_id": "string",
+            "item_count": "int"
+          },
+          "events": [
+            "inventory_reserved",
+            "payment_authorized"
+          ]
+        },
+        "refund": {
+          "description": "A refund, from request to settlement",
+          "kind": "internal",
+          "attributes": {
+            "amount": "float",
+            "order_id": "digest",
+            "partial": "bool",
+            "settle_time": "duration"
+          },
+          "events": []
+        }
+      },
+      "metrics": {
+        "cart_size": {
+          "description": "Items in the cart at checkout",
+          "type": "gauge",
+          "unit": "none",
+          "attributes": {
+            "route": "string"
+          }
+        },
+        "orders_placed": {
+          "description": "Orders that reached confirmation",
+          "type": "counter",
+          "unit": "none",
+          "attributes": {}
+        },
+        "request_duration": {
+          "description": "Server-side request latency",
+          "type": "histogram",
+          "unit": "ms",
+          "attributes": {
+            "route": "string",
+            "status": "int"
+          }
+        }
+      },
+      "logs": {
+        "order_failed": {
+          "description": "An order that reached checkout and did not complete",
+          "level": "error",
+          "fields": {
+            "order_id": "string",
+            "reason": "string"
+          }
+        }
+      },
+      "errors": {},
+      "queries": {
+        "cart-size-avg": {
+          "description": "Average cart size at checkout",
+          "measure": "metric.store_server.cart_size",
+          "aggregation": "avg",
+          "window_seconds": 300,
+          "group_by": []
+        },
+        "checkout-p95": {
+          "description": "95th-percentile request latency per route over five minutes",
+          "measure": "metric.store_server.request_duration",
+          "aggregation": "p95",
+          "window_seconds": 300,
+          "group_by": [
+            "route"
+          ]
+        },
+        "checkout-rate": {
+          "description": "Checkouts started per second",
+          "measure": "span.store_server.checkout",
+          "aggregation": "rate",
+          "window_seconds": 60,
+          "group_by": []
+        },
+        "declines-by-processor": {
+          "description": "Declined authorizations per day, by the processor's code",
+          "measure": "error.payments.authorization_declined",
+          "aggregation": "count",
+          "window_seconds": 86400,
+          "group_by": [
+            "processor_code"
+          ]
+        },
+        "failed-orders": {
+          "description": "Failed orders per hour, by reason",
+          "measure": "log.store_server.order_failed",
+          "aggregation": "count",
+          "window_seconds": 3600,
+          "group_by": [
+            "reason"
+          ]
+        },
+        "orders-per-second": {
+          "description": "Orders placed per second",
+          "measure": "metric.store_server.orders_placed",
+          "aggregation": "rate",
+          "window_seconds": 30,
+          "group_by": []
+        }
+      },
+      "dashboards": {
+        "checkout-health": {
+          "title": "Checkout health",
+          "panels": [
+            {
+              "title": "p95 latency by route",
+              "source": "query.store_server.checkout-p95",
+              "render": "timeseries"
+            },
+            {
+              "title": "Orders per second",
+              "source": "query.store_server.orders-per-second",
+              "render": "stat"
+            },
+            {
+              "title": "Failed orders by reason",
+              "source": "query.store_server.failed-orders",
+              "render": "table"
+            },
+            {
+              "title": "p90 settlement time",
+              "source": "query.payments.settlement-p90",
+              "render": "timeseries"
+            },
+            {
+              "title": "Failed orders",
+              "source": "log.store_server.order_failed",
+              "render": "logs"
+            },
+            {
+              "title": "Declined authorizations",
+              "source": "error.payments.authorization_declined",
+              "render": "logs"
+            }
+          ]
+        }
+      },
+      "retired_codes": []
+    }
+  },
+  "retired_modules": [],
+  "files": [
+    "generated/telemetry/cpp/store_server_telemetry.hpp",
+    "generated/telemetry/grafana/dashboards/payments-payments-health.json",
+    "generated/telemetry/grafana/dashboards/store_server-checkout-health.json",
+    "generated/telemetry/grafana/queries.rs",
+    "generated/telemetry/grafana/queries.ts",
+    "generated/telemetry/postgresql/corpus.json",
+    "generated/telemetry/postgresql/functions.sql",
+    "generated/telemetry/postgresql/layout.sql",
+    "generated/telemetry/postgresql/queries/ledger.sql",
+    "generated/telemetry/postgresql/queries/payments.sql",
+    "generated/telemetry/postgresql/queries/store_server.sql",
+    "generated/telemetry/postgresql/views.sql",
+    "generated/telemetry/rust/store_server_telemetry.rs",
+    "services/payments/generated/telemetry/cpp/payments_telemetry.hpp",
+    "services/payments/generated/telemetry/rust/payments_telemetry.rs",
+    "services/payments/ledger/generated/telemetry/cpp/ledger_telemetry.hpp",
+    "services/payments/ledger/generated/telemetry/rust/ledger_telemetry.rs"
+  ]
+}

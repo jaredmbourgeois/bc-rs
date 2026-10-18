@@ -1,0 +1,32 @@
+[package]
+name = "bc-nodular-architecture-rs"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+license.workspace = true
+description = "Runtime-neutral nodular unidirectional data flow ported from bourgeois_concern"
+readme = "README.md"
+include = [
+  "/src/**",
+  "/tests/**",
+  "/benches/**",
+  "/Cargo.toml",
+  "/LICENSE.txt",
+  "/README.md",
+]
+
+[[bench]]
+name = "nodular"
+harness = false
+
+[lib]
+name = "bc_nodular_architecture"
+path = "src/lib.rs"
+
+[dependencies]
+bc-core-rs = { workspace = true }
+bc-date-time-rs = { workspace = true }
+
+[lints]
+workspace = true

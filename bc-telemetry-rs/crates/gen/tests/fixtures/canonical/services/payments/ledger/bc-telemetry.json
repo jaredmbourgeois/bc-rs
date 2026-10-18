@@ -1,0 +1,25 @@
+{
+  "module": { "name": "ledger", "schema_version": 1 },
+  "metric": {
+    "entries_posted": {
+      "description": "Ledger entries posted",
+      "type": "counter",
+      "unit": "none"
+    }
+  },
+  "log": {
+    "entry_posted": {
+      "description": "A ledger entry was posted",
+      "level": "info",
+      "fields": { "account": "string" }
+    }
+  },
+  "error": {
+    "account_closed": {
+      "description": "The entry names an account that is closed",
+      "class": "refusal",
+      "code": 1,
+      "fields": { "account": "string", "metadata": "string" }
+    }
+  }
+}

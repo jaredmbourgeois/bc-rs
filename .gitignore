@@ -1,0 +1,27 @@
+/target/
+/scratch/
+.DS_Store
+# A session's scratch lane, opened inside a member rather than at the root.
+/*/scratch/
+
+# IDE state is per-developer, with one exception: the run configurations are the
+# shared entry points into scripts/verify.sh, and JetBrains stores hand-made
+# configs in workspace.xml, which it ignores by default. Tracking that one
+# directory is what makes them survive a fresh clone.
+/.idea/*
+!/.idea/runConfigurations/
+# A member opened as an IDE project of its own keeps that state to itself, untracked: the shared run configurations
+# are the root's.
+/*/.idea/
+
+# The bindings smoke harnesses are workspaces of their own, so each has its own
+# build output. Their Cargo.lock files stay tracked: they pin the generator.
+/bc-date-time-rs/bindings-smoke/target/
+/bc-error-rs/bindings-smoke/target/
+
+# The TypeScript proof's SDK, fetched from its committed lockfile by
+# bc-telemetry-rs/scripts/fetch-typescript-sdk.sh, never committed.
+/bc-telemetry-rs/crates/gen/tests/typescript/node_modules/
+
+# Python byte-code, written beside a script the first time an interpreter imports it.
+__pycache__/

@@ -1,0 +1,32 @@
+[package]
+name = "bc-core-rs"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+license.workspace = true
+description = "Foundation data structures ported from bourgeois_concern's libs/foundation/core"
+readme = "README.md"
+keywords = ["arena", "generational", "slotmap", "handle"]
+categories = ["data-structures", "memory-management"]
+include = [
+    "/src/**",
+    "/tests/**",
+    "/Cargo.toml",
+    "/LICENSE.txt",
+    "/README.md",
+]
+
+[lib]
+name = "bc_core"
+path = "src/lib.rs"
+
+# No [dependencies] section, and that is the contract scripts/verify.sh enforces.
+# This crate sits underneath the rest of the family — bc-nodular-architecture-rs
+# holds its arena on the hottest path it has — so a dependency taken here is a
+# dependency taken by every consumer downstream of it. The arena is a Vec and a
+# free list; nothing it does needs help.
+
+# The workspace's one lint policy (the root Cargo.toml), so the IDE and `cargo clippy` read the rules CI enforces.
+[lints]
+workspace = true

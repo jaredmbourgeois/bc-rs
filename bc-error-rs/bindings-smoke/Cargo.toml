@@ -1,0 +1,32 @@
+# A test-only cdylib shim, and deliberately not part of bc-error-rs.
+#
+# Every bound crate in the family stays a plain `lib`: the `cdylib` a binding
+# generator runs against belongs to the foreign consumer, not to the library.
+# This directory is that consumer, standing in for a real Swift or Kotlin
+# application so the generated bindings are compiled and executed by something
+# rather than merely produced.
+#
+# Its own `[workspace]` table makes it a workspace root of its own, outside bc-rs's
+# (the root manifest excludes it), so the member's packages stay what its pipeline
+# assumes. It is absent from the member's `package.include` allowlist, so
+# `cargo package` never sees it.
+[workspace]
+
+[package]
+name = "bc-error-bindings-smoke"
+version = "0.0.0"
+edition = "2024"
+publish = false
+license = "Apache-2.0"
+
+[lib]
+name = "bc_error_bindings_smoke"
+crate-type = ["cdylib"]
+
+[[bin]]
+name = "uniffi-bindgen"
+path = "src/bin/uniffi-bindgen.rs"
+
+[dependencies]
+bc-error-rs = { path = "..", features = ["uniffi"] }
+uniffi = { version = "0.32.0", default-features = false, features = ["cli"] }

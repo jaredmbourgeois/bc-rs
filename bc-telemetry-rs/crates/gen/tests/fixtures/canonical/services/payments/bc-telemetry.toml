@@ -1,0 +1,70 @@
+# The module `payments`. Its errors are declared in JSON, to hold the two syntaxes to one
+# meaning inside a single module.
+include = ["errors.json"]
+
+[module]
+name = "payments"
+schema_version = 1
+
+[span.authorize]
+description = "One authorization request to the card processor"
+kind = "client"
+attributes = { processor = "string" }
+events = ["processor_called"]
+
+[metric.settlement_duration]
+description = "Time from capture to settlement"
+type = "histogram"
+unit = "s"
+attributes = { processor = "string" }
+
+[metric.response_size]
+description = "Size of the processor's response body"
+type = "histogram"
+unit = "bytes"
+
+[metric.capture_success]
+description = "Share of captures the processor accepted"
+type = "gauge"
+unit = "percent"
+
+[log.processor_timeout]
+description = "The processor did not answer in time"
+level = "warn"
+fields = { processor = "string", waited = "duration" }
+
+[query.settlement-p90]
+description = "90th-percentile settlement time per processor over fifteen minutes"
+measure = "metric.settlement_duration"
+aggregation = "p90"
+window = "15m"
+group_by = ["processor"]
+
+[query.response-bytes]
+description = "Bytes received from the processor per hour"
+measure = "metric.response_size"
+aggregation = "sum"
+window = "1h"
+
+[dashboard.payments-health]
+title = "Payments health"
+
+[[dashboard.payments-health.panel]]
+title = "p90 settlement time by processor"
+query = "query.settlement-p90"
+render = "timeseries"
+
+[[dashboard.payments-health.panel]]
+title = "Response bytes"
+query = "query.response-bytes"
+render = "stat"
+
+[[dashboard.payments-health.panel]]
+title = "Checkouts per second"
+query = "query.store_server.checkout-rate"
+render = "timeseries"
+
+[[dashboard.payments-health.panel]]
+title = "Processor timeouts"
+query = "log.processor_timeout"
+render = "logs"

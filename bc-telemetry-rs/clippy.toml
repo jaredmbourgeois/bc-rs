@@ -1,0 +1,14 @@
+# `doc_markdown` (clippy::pedantic) flags mixed-case words in doc comments as
+# probable un-backticked identifiers. "UniFFI" is a product name, not an item,
+# and backticking it would render it as code everywhere it is discussed. The
+# `..` keeps clippy's own default list — which already carries names of exactly
+# this shape, "OpenGL" and "TypeScript" among them — rather than replacing it.
+doc-valid-idents = ["UniFFI", "OTel", "OTLP", "LDJSON", "PostgreSQL", ".."]
+
+# A guard makes its span current on this thread until it drops. Held across an
+# `.await`, it stays current while its task is suspended, so whatever the thread
+# runs next — another task — inherits it. Asynchronous code makes a span current
+# with `with_span_async` or `running_span_async` instead (`src/context.rs`).
+await-holding-invalid-types = [
+    { path = "bc_telemetry::SpanGuard", reason = "a guard held across an `.await` stays current while its task is suspended; use `with_span_async` or `running_span_async`" },
+]

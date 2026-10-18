@@ -1,0 +1,115 @@
+{
+  "module": { "name": "store_server", "schema_version": 1 },
+  "generate": {
+    "output": "generated/telemetry",
+    "dialects": ["postgresql"],
+    "exports": ["grafana"],
+    "languages": ["cpp", "rust"],
+    "grafana": { "datasource": "telemetry" }
+  },
+  "span": {
+    "checkout": {
+      "description": "One checkout flow, cart to confirmation",
+      "kind": "server",
+      "attributes": { "cart_id": "string", "item_count": "int" },
+      "events": ["payment_authorized", "inventory_reserved"]
+    },
+    "refund": {
+      "description": "A refund, from request to settlement",
+      "attributes": {
+        "order_id": "digest",
+        "amount": "float",
+        "partial": "bool",
+        "settle_time": "duration"
+      }
+    }
+  },
+  "metric": {
+    "request_duration": {
+      "description": "Server-side request latency",
+      "type": "histogram",
+      "unit": "ms",
+      "attributes": { "route": "string", "status": "int" }
+    },
+    "orders_placed": {
+      "description": "Orders that reached confirmation",
+      "type": "counter",
+      "unit": "none"
+    },
+    "cart_size": {
+      "description": "Items in the cart at checkout",
+      "type": "gauge",
+      "unit": "none",
+      "attributes": { "route": "string" }
+    }
+  },
+  "log": {
+    "order_failed": {
+      "description": "An order that reached checkout and did not complete",
+      "level": "error",
+      "fields": { "order_id": "string", "reason": "string" }
+    }
+  },
+  "query": {
+    "checkout-p95": {
+      "description": "95th-percentile request latency per route over five minutes",
+      "measure": "metric.request_duration",
+      "aggregation": "p95",
+      "window": "5m",
+      "group_by": ["route"]
+    },
+    "orders-per-second": {
+      "description": "Orders placed per second",
+      "measure": "metric.orders_placed",
+      "aggregation": "rate",
+      "window": "30s"
+    },
+    "cart-size-avg": {
+      "description": "Average cart size at checkout",
+      "measure": "metric.cart_size",
+      "aggregation": "avg",
+      "window": "5m"
+    },
+    "checkout-rate": {
+      "description": "Checkouts started per second",
+      "measure": "span.checkout",
+      "aggregation": "rate",
+      "window": "1m"
+    },
+    "failed-orders": {
+      "description": "Failed orders per hour, by reason",
+      "measure": "log.order_failed",
+      "aggregation": "count",
+      "window": "1h",
+      "group_by": ["reason"]
+    },
+    "declines-by-processor": {
+      "description": "Declined authorizations per day, by the processor's code",
+      "measure": "error.payments.authorization_declined",
+      "aggregation": "count",
+      "window": "1d",
+      "group_by": ["processor_code"]
+    }
+  },
+  "dashboard": {
+    "checkout-health": {
+      "title": "Checkout health",
+      "panel": [
+        { "title": "p95 latency by route", "query": "query.checkout-p95", "render": "timeseries" },
+        { "title": "Orders per second", "query": "query.orders-per-second", "render": "stat" },
+        { "title": "Failed orders by reason", "query": "query.failed-orders", "render": "table" },
+        {
+          "title": "p90 settlement time",
+          "query": "query.payments.settlement-p90",
+          "render": "timeseries"
+        },
+        { "title": "Failed orders", "query": "log.order_failed", "render": "logs" },
+        {
+          "title": "Declined authorizations",
+          "query": "error.payments.authorization_declined",
+          "render": "logs"
+        }
+      ]
+    }
+  }
+}

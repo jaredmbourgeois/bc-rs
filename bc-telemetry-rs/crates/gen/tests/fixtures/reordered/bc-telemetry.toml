@@ -1,0 +1,94 @@
+# The canonical tree again: declared in another order, split another way, every window
+# spelled in another unit, and every reference naming its own module in full — so its
+# generated tree must be byte-identical to canonical's.
+include = ["parts/spans.json", "parts/metrics.toml"]
+
+[dashboard.checkout-health]
+title = "Checkout health"
+
+[[dashboard.checkout-health.panel]]
+title = "p95 latency by route"
+query = "query.store_server.checkout-p95"
+render = "timeseries"
+
+[[dashboard.checkout-health.panel]]
+title = "Orders per second"
+query = "query.store_server.orders-per-second"
+render = "stat"
+
+[[dashboard.checkout-health.panel]]
+title = "Failed orders by reason"
+query = "query.store_server.failed-orders"
+render = "table"
+
+[[dashboard.checkout-health.panel]]
+title = "p90 settlement time"
+query = "query.payments.settlement-p90"
+render = "timeseries"
+
+[[dashboard.checkout-health.panel]]
+title = "Failed orders"
+query = "log.store_server.order_failed"
+render = "logs"
+
+[[dashboard.checkout-health.panel]]
+title = "Declined authorizations"
+query = "error.payments.authorization_declined"
+render = "logs"
+
+[query.declines-by-processor]
+group_by = ["processor_code"]
+window = "24h"
+aggregation = "count"
+measure = "error.payments.authorization_declined"
+description = "Declined authorizations per day, by the processor's code"
+
+[query.failed-orders]
+group_by = ["reason"]
+window = "60m"
+aggregation = "count"
+measure = "log.store_server.order_failed"
+description = "Failed orders per hour, by reason"
+
+[query.checkout-rate]
+window = "60s"
+aggregation = "rate"
+measure = "span.store_server.checkout"
+description = "Checkouts started per second"
+
+[query.cart-size-avg]
+window = "300s"
+aggregation = "avg"
+measure = "metric.store_server.cart_size"
+description = "Average cart size at checkout"
+
+[query.orders-per-second]
+window = "30s"
+aggregation = "rate"
+measure = "metric.store_server.orders_placed"
+description = "Orders placed per second"
+
+[query.checkout-p95]
+group_by = ["route"]
+window = "300s"
+aggregation = "p95"
+measure = "metric.store_server.request_duration"
+description = "95th-percentile request latency per route over five minutes"
+
+[log.order_failed]
+fields = { reason = "string", order_id = "string" }
+level = "error"
+description = "An order that reached checkout and did not complete"
+
+[generate.grafana]
+datasource = "telemetry"
+
+[generate]
+languages = ["cpp", "rust"]
+exports = ["grafana"]
+dialects = ["postgresql"]
+output = "generated/telemetry"
+
+[module]
+schema_version = 1
+name = "store_server"

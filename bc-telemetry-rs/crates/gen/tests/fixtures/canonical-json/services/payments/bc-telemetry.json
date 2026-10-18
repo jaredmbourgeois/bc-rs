@@ -1,0 +1,84 @@
+{
+  "module": { "name": "payments", "schema_version": 1 },
+  "span": {
+    "authorize": {
+      "description": "One authorization request to the card processor",
+      "kind": "client",
+      "attributes": { "processor": "string" },
+      "events": ["processor_called"]
+    }
+  },
+  "metric": {
+    "settlement_duration": {
+      "description": "Time from capture to settlement",
+      "type": "histogram",
+      "unit": "s",
+      "attributes": { "processor": "string" }
+    },
+    "response_size": {
+      "description": "Size of the processor's response body",
+      "type": "histogram",
+      "unit": "bytes"
+    },
+    "capture_success": {
+      "description": "Share of captures the processor accepted",
+      "type": "gauge",
+      "unit": "percent"
+    }
+  },
+  "log": {
+    "processor_timeout": {
+      "description": "The processor did not answer in time",
+      "level": "warn",
+      "fields": { "processor": "string", "waited": "duration" }
+    }
+  },
+  "error": {
+    "authorization_declined": {
+      "description": "The processor declined the authorization",
+      "class": "failure",
+      "code": 1,
+      "fields": { "order_id": "string", "processor_code": "string" }
+    },
+    "card_expired": {
+      "description": "The card expired before the charge",
+      "class": "refusal",
+      "code": 2,
+      "fields": { "order_id": "string" }
+    }
+  },
+  "query": {
+    "settlement-p90": {
+      "description": "90th-percentile settlement time per processor over fifteen minutes",
+      "measure": "metric.settlement_duration",
+      "aggregation": "p90",
+      "window": "15m",
+      "group_by": ["processor"]
+    },
+    "response-bytes": {
+      "description": "Bytes received from the processor per hour",
+      "measure": "metric.response_size",
+      "aggregation": "sum",
+      "window": "1h"
+    }
+  },
+  "dashboard": {
+    "payments-health": {
+      "title": "Payments health",
+      "panel": [
+        {
+          "title": "p90 settlement time by processor",
+          "query": "query.settlement-p90",
+          "render": "timeseries"
+        },
+        { "title": "Response bytes", "query": "query.response-bytes", "render": "stat" },
+        {
+          "title": "Checkouts per second",
+          "query": "query.store_server.checkout-rate",
+          "render": "timeseries"
+        },
+        { "title": "Processor timeouts", "query": "log.processor_timeout", "render": "logs" }
+      ]
+    }
+  }
+}

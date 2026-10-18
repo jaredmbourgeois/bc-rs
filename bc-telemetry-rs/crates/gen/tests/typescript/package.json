@@ -1,0 +1,11 @@
+{
+  "name": "bc-telemetry-gen-typescript-proof",
+  "private": true,
+  "description": "The TypeScript query handles' proof: one dashboard built with Grafana's Foundation SDK from the canonical tree's generated handles. Fetched by scripts/fetch-typescript-sdk.sh; never during a test.",
+  "license": "Apache-2.0",
+  "type": "commonjs",
+  "devDependencies": {
+    "@grafana/grafana-foundation-sdk": "0.0.20",
+    "typescript": "6.0.3"
+  }
+}

@@ -1,0 +1,58 @@
+[package]
+name = "bc-json-rs"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+license.workspace = true
+description = "Strict RFC 8259 JSON validation, reading, and writing ported from bourgeois_concern"
+readme = "README.md"
+keywords = ["json", "rfc8259", "validation", "parser", "zero-copy"]
+categories = ["encoding", "parser-implementations"]
+include = [
+    "/src/**",
+    "/tests/**",
+    "/Cargo.toml",
+    "/LICENSE.txt",
+    "/README.md",
+]
+
+[lib]
+name = "bc_json"
+path = "src/lib.rs"
+
+[features]
+default = []
+# Makes this crate a serde *format* rather than an island: `to_string` /
+# `from_str` for any `Serialize` / `Deserialize` type, over the same escaper,
+# number grammar, and validator the native API uses. Off by default, so the
+# normal build stays dependency-free.
+serde = ["dep:serde"]
+
+[dependencies]
+# Not optional, and not a third-party edge. The strict read tier returns errors
+# that carry named `AnyErrorKind` descriptors, so the family's one error
+# vocabulary is part of this crate's surface rather than a bolt-on; bc-error-rs
+# is itself third-party-free, so a consumer's third-party closure is unchanged
+# by this. `scripts/verify.sh` enforces the claim that actually matters --- no
+# third-party crate in the default build --- against an explicit sibling
+# allowlist, rather than against "no dependency at all".
+bc-error-rs = { workspace = true }
+# `default-features = false` keeps the derive machinery and `std` out of the
+# graph unless a consumer asks for them; this crate needs only the traits.
+serde = { version = "1", optional = true, default-features = false, features = [
+    "alloc",
+] }
+
+[dev-dependencies]
+# Tests only. The claim that this validator is stricter than serde_json is
+# checked against serde_json rather than asserted, so the strictness delta in
+# README.md is measured, and the serde bridge's round-trip invariant is stated
+# as agreement with it. Dev-dependencies never reach a consumer's graph, so this
+# does not weaken the dependency-free guarantee scripts/verify.sh enforces.
+serde_json = "1"
+serde = { version = "1", features = ["derive"] }
+
+# The workspace's one lint policy (the root Cargo.toml), so the IDE and `cargo clippy` read the rules CI enforces.
+[lints]
+workspace = true

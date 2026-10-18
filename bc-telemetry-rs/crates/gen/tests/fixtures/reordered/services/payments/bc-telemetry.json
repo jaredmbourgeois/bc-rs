@@ -1,0 +1,57 @@
+{
+  "include": ["more/*.toml"],
+  "dashboard": {
+    "payments-health": {
+      "panel": [
+        {
+          "render": "timeseries",
+          "query": "query.payments.settlement-p90",
+          "title": "p90 settlement time by processor"
+        },
+        { "render": "stat", "query": "query.payments.response-bytes", "title": "Response bytes" },
+        {
+          "render": "timeseries",
+          "query": "query.store_server.checkout-rate",
+          "title": "Checkouts per second"
+        },
+        {
+          "render": "logs",
+          "query": "log.payments.processor_timeout",
+          "title": "Processor timeouts"
+        }
+      ],
+      "title": "Payments health"
+    }
+  },
+  "query": {
+    "response-bytes": {
+      "window": "60m",
+      "aggregation": "sum",
+      "measure": "metric.payments.response_size",
+      "description": "Bytes received from the processor per hour"
+    },
+    "settlement-p90": {
+      "group_by": ["processor"],
+      "window": "900s",
+      "aggregation": "p90",
+      "measure": "metric.payments.settlement_duration",
+      "description": "90th-percentile settlement time per processor over fifteen minutes"
+    }
+  },
+  "log": {
+    "processor_timeout": {
+      "fields": { "waited": "duration", "processor": "string" },
+      "level": "warn",
+      "description": "The processor did not answer in time"
+    }
+  },
+  "span": {
+    "authorize": {
+      "events": ["processor_called"],
+      "kind": "client",
+      "attributes": { "processor": "string" },
+      "description": "One authorization request to the card processor"
+    }
+  },
+  "module": { "schema_version": 1, "name": "payments" }
+}

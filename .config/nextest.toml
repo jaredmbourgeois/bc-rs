@@ -1,0 +1,23 @@
+# nextest reads this file at the workspace root alone, so every member's bounds live here, each override filtered
+# to the package it is for.
+#
+# A per-test timeout, which plain `cargo test` cannot express. Set on `default` rather than only on `ci`: a hung
+# test on a developer's machine is the one that wastes a person's attention rather than a build minute, and
+# bc-telemetry-rs's exporter suites bind sockets and spawn threads that can block forever if a bind or an accept
+# never completes. `ci` inherits this and only adds its own reporting.
+[profile.default]
+slow-timeout = { period = "30s", terminate-after = 1 }
+
+# A test that starts its own PostgreSQL pays for `initdb` and a server start before it asserts anything — about a
+# second on an idle machine and many more on a loaded one — so it gets a longer bound. Still a bound: a hang fails it.
+[[profile.default.overrides]]
+filter = 'package(bc-telemetry-gen) & binary(suite) & test(/^layout::/)'
+slow-timeout = { period = "120s", terminate-after = 1 }
+
+[[profile.default.overrides]]
+filter = 'package(bc-telemetry-rs) & binary(postgres_exporter) & test(/^against_a_real_database::/)'
+slow-timeout = { period = "120s", terminate-after = 1 }
+
+[profile.ci]
+fail-fast = false
+slow-timeout = { period = "30s", terminate-after = 1 }

@@ -1,0 +1,55 @@
+[package]
+name = "bc-date-time-rs"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+license.workspace = true
+description = "Canonical UTC epoch-millisecond time type, injectable clock seam, and Gregorian calendar utilities ported from bourgeois_concern"
+readme = "README.md"
+keywords = ["date", "time", "epoch", "iso8601", "utc"]
+# Not `no-std`: `EpochSource` holds an `Arc` and `system_epoch_source` reads
+# `SystemTime`. The crate has no third-party dependencies, which is a different
+# claim and the one the README actually makes.
+categories = ["date-and-time"]
+include = [
+    "/src/**",
+    "/tests/**",
+    "/Cargo.toml",
+    "/LICENSE.txt",
+    "/README.md",
+]
+
+[lib]
+name = "bc_date_time"
+path = "src/lib.rs"
+
+[features]
+default = []
+# The UniFFI binding, so a Swift or Kotlin application can depend on this crate
+# directly. Off by default, following bc-json-rs's precedent: the normal build
+# stays dependency-free, and enabling this pulls the whole uniffi dependency
+# closure — see `cargo tree --features uniffi` for the count, which is not the
+# same in every sibling and so is not restated here.
+#
+# `default-features = false` on the dependency is load-bearing, not tidiness.
+# uniffi's default `cargo-metadata` feature pulls `cargo_metadata`, which
+# requires rustc 1.86 and hard-fails this crate's 1.85 pin — verified
+# 2026-08-28. Those crates belong to the *generator*, which runs on its own
+# toolchain; the runtime a bound crate links needs none of them.
+uniffi = ["dep:uniffi"]
+
+[dependencies]
+# The one optional dependency, and the only one. The default build has no
+# [dependencies] at all, which is the contract scripts/verify.sh enforces.
+#
+# This crate is the family's canonical time type: it lands in a consumer's
+# persisted records and in the small runtimes a consumer ships to remote hosts —
+# the most dependency-sensitive place in its build. The calendar math is the
+# same days-from-civil algorithm C++20 <chrono> implements, so depending on
+# `chrono` or `jiff` would buy nothing this file does not already have.
+uniffi = { version = "0.32.0", optional = true, default-features = false }
+
+# The workspace's one lint policy (the root Cargo.toml), so the IDE and `cargo clippy` read the rules CI enforces.
+[lints]
+workspace = true

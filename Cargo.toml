@@ -1,0 +1,55 @@
+[workspace]
+# Each member is the directory named for its crate; the two nested packages are a member's companions.
+members = [
+    "bc-core-rs",
+    "bc-date-time-rs",
+    "bc-error-rs",
+    "bc-json-rs",
+    "bc-nodular-architecture-rs",
+    "bc-nodular-architecture-rs/crates/tokio",
+    "bc-telemetry-rs",
+    "bc-telemetry-rs/crates/dashboard",
+    "bc-telemetry-rs/crates/gen",
+]
+# The UniFFI smoke shims are their own workspaces, built by `scripts/bindings-smoke.sh` on the generator's toolchain.
+exclude = [
+    "bc-date-time-rs/bindings-smoke",
+    "bc-error-rs/bindings-smoke",
+]
+resolver = "3"
+
+# Shared by every member so none can drift on edition, MSRV, licensing or publishing. There is no `version` here:
+# each package spells its own, because each member publishes on its own (`first-public-release`).
+[workspace.package]
+edition = "2024"
+rust-version = "1.85"
+publish = false
+license = "Apache-2.0"
+
+# Every dependency one member has on another, declared once with the version and path a publish needs, and inherited
+# with `{ workspace = true }`: a member's own manifest names no path, so none can resolve outside bc-rs. tokio is here
+# for the nodular adapter's two tables.
+[workspace.dependencies]
+bc-core-rs = { version = "0.1.0", path = "bc-core-rs" }
+bc-date-time-rs = { version = "0.1.0", path = "bc-date-time-rs" }
+bc-error-rs = { version = "0.1.0", path = "bc-error-rs" }
+bc-json-rs = { version = "0.1.0", path = "bc-json-rs" }
+bc-nodular-architecture-rs = { version = "0.1.0", path = "bc-nodular-architecture-rs" }
+bc-telemetry-dashboard = { version = "0.1.0", path = "bc-telemetry-rs/crates/dashboard" }
+bc-telemetry-rs = { version = "0.1.0", path = "bc-telemetry-rs" }
+tokio = { version = "1", default-features = false, features = ["rt", "sync"] }
+
+# The lint policy lives here rather than in each lib.rs so RustRover and `cargo clippy` read the same rules CI
+# enforces, and every member inherits it with `[lints] workspace = true`.
+[workspace.lints.rust]
+unsafe_code = "forbid"
+missing_debug_implementations = "warn"
+unreachable_pub = "warn"
+# `missing_docs` is deliberately NOT here: Cargo applies [lints] to every target, and an integration-test crate has
+# no crate-level docs to write. It stays an inner attribute in each library root, the only target it should govern.
+
+[workspace.lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+# Ported public API keeps the source's argument order and naming; a lint that would rename or reorder it is
+# answering to the wrong authority.
+module_name_repetitions = "allow"

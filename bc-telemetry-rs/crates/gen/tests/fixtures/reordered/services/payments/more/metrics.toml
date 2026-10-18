@@ -1,0 +1,19 @@
+[metric.capture_success]
+unit = "percent"
+type = "gauge"
+description = "Share of captures the processor accepted"
+
+[metric.response_size]
+unit = "bytes"
+type = "histogram"
+description = "Size of the processor's response body"
+
+[metric.settlement_duration]
+attributes = { processor = "string" }
+unit = "s"
+type = "histogram"
+description = "Time from capture to settlement"
+
+[module]
+name = "payments"
+schema_version = 1

@@ -1,0 +1,21 @@
+[package]
+name = "bc-telemetry-dashboard"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+license.workspace = true
+description = "A typed model of Grafana dashboards over the bc-telemetry layout, and its builder"
+readme = "README.md"
+
+[lib]
+name = "bc_telemetry_dashboard"
+path = "src/lib.rs"
+
+[dependencies]
+# A dashboard is rendered with the family's JSON writer, the one the generator's
+# manifest and corpus use.
+bc-json-rs = { workspace = true }
+
+[lints]
+workspace = true

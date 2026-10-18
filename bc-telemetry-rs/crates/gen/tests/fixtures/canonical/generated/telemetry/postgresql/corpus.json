@@ -1,0 +1,3905 @@
+{
+  "layout_version": 1,
+  "service_name": "corpus",
+  "setup": [
+    "SELECT * FROM telemetry.maintain('2026-01-15T12:00:00.000Z'::timestamptz, days_ahead => 1, days_kept => 2)",
+    "SELECT * FROM telemetry.erase_customers('corpus-org', ARRAY['customer-erased'], '2026-01-15T11:00:00.000Z'::timestamptz)"
+  ],
+  "statements": {
+    "open_staging": "SELECT telemetry.open_staging()",
+    "spans": {
+      "copy": "COPY pg_temp.bc_telemetry_staged_spans (time, record_id, module, name, schema_version, service_name, organization, customer, trace_id, span_id, attributes, end_time, parent_span_id, kind, status, status_message, events) FROM STDIN",
+      "ingest": "SELECT inserted, out_of_range, erased, duplicate FROM telemetry.ingest_spans()"
+    },
+    "metrics": {
+      "copy": "COPY pg_temp.bc_telemetry_staged_metrics (time, record_id, module, name, schema_version, service_name, organization, customer, trace_id, span_id, attributes, kind, value) FROM STDIN",
+      "ingest": "SELECT inserted, out_of_range, erased, duplicate FROM telemetry.ingest_metrics()"
+    },
+    "logs": {
+      "copy": "COPY pg_temp.bc_telemetry_staged_logs (time, record_id, module, name, schema_version, service_name, organization, customer, trace_id, span_id, attributes, severity, body) FROM STDIN",
+      "ingest": "SELECT inserted, out_of_range, erased, duplicate FROM telemetry.ingest_logs()"
+    }
+  },
+  "batches": [
+    {
+      "name": "every declared span",
+      "kind": "spans",
+      "records": [
+        {
+          "name": "payments.authorize",
+          "trace_id": "c0de0000000000000000000000000001",
+          "span_id": "5ba9000000000001",
+          "kind": "client",
+          "status": "ok",
+          "status_message": "",
+          "start_ms": 1768477200000,
+          "end_ms": 1768477200125,
+          "attributes": [
+            {
+              "key": "processor",
+              "string": "processor-0"
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "customer.id",
+              "string": "customer-kept"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "events": [
+            {
+              "name": "processor_called",
+              "time_ms": 1768477200005,
+              "attributes": []
+            }
+          ]
+        },
+        {
+          "name": "payments.authorize",
+          "trace_id": "c0de0000000000000000000000000002",
+          "span_id": "5ba9000000000002",
+          "kind": "client",
+          "status": "unset",
+          "status_message": "",
+          "start_ms": 1768477500000,
+          "end_ms": 1768477500125,
+          "attributes": [
+            {
+              "key": "processor",
+              "string": "processor-1"
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "events": [
+            {
+              "name": "processor_called",
+              "time_ms": 1768477500005,
+              "attributes": []
+            }
+          ]
+        },
+        {
+          "name": "payments.authorize",
+          "trace_id": "c0de0000000000000000000000000003",
+          "span_id": "5ba9000000000003",
+          "kind": "client",
+          "status": "error",
+          "status_message": "failed",
+          "start_ms": 1768477800000,
+          "end_ms": 1768477800125,
+          "attributes": [
+            {
+              "key": "processor",
+              "string": "processor-0"
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "events": [
+            {
+              "name": "processor_called",
+              "time_ms": 1768477800005,
+              "attributes": []
+            }
+          ]
+        },
+        {
+          "name": "store_server.checkout",
+          "trace_id": "c0de0000000000000000000000000004",
+          "span_id": "5ba9000000000004",
+          "kind": "server",
+          "status": "ok",
+          "status_message": "",
+          "start_ms": 1768477200000,
+          "end_ms": 1768477200125,
+          "attributes": [
+            {
+              "key": "cart_id",
+              "string": "cart_id-0"
+            },
+            {
+              "key": "item_count",
+              "int": 1
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "customer.id",
+              "string": "customer-kept"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "events": [
+            {
+              "name": "inventory_reserved",
+              "time_ms": 1768477200005,
+              "attributes": []
+            },
+            {
+              "name": "payment_authorized",
+              "time_ms": 1768477200005,
+              "attributes": []
+            }
+          ]
+        },
+        {
+          "name": "store_server.checkout",
+          "trace_id": "c0de0000000000000000000000000005",
+          "span_id": "5ba9000000000005",
+          "kind": "server",
+          "status": "unset",
+          "status_message": "",
+          "start_ms": 1768477500000,
+          "end_ms": 1768477500125,
+          "attributes": [
+            {
+              "key": "cart_id",
+              "string": "cart_id-1"
+            },
+            {
+              "key": "item_count",
+              "int": 2
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "events": [
+            {
+              "name": "inventory_reserved",
+              "time_ms": 1768477500005,
+              "attributes": []
+            },
+            {
+              "name": "payment_authorized",
+              "time_ms": 1768477500005,
+              "attributes": []
+            }
+          ]
+        },
+        {
+          "name": "store_server.checkout",
+          "trace_id": "c0de0000000000000000000000000006",
+          "span_id": "5ba9000000000006",
+          "kind": "server",
+          "status": "error",
+          "status_message": "failed",
+          "start_ms": 1768477800000,
+          "end_ms": 1768477800125,
+          "attributes": [
+            {
+              "key": "cart_id",
+              "string": "cart_id-0"
+            },
+            {
+              "key": "item_count",
+              "int": 3
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "events": [
+            {
+              "name": "inventory_reserved",
+              "time_ms": 1768477800005,
+              "attributes": []
+            },
+            {
+              "name": "payment_authorized",
+              "time_ms": 1768477800005,
+              "attributes": []
+            }
+          ]
+        },
+        {
+          "name": "store_server.refund",
+          "trace_id": "c0de0000000000000000000000000007",
+          "span_id": "5ba9000000000007",
+          "kind": "internal",
+          "status": "ok",
+          "status_message": "",
+          "start_ms": 1768477200000,
+          "end_ms": 1768477200125,
+          "attributes": [
+            {
+              "key": "amount",
+              "float": 12.5
+            },
+            {
+              "key": "order_id",
+              "string": "digest-0"
+            },
+            {
+              "key": "partial",
+              "bool": true
+            },
+            {
+              "key": "settle_time",
+              "int": 250
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "customer.id",
+              "string": "customer-kept"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "events": []
+        },
+        {
+          "name": "store_server.refund",
+          "trace_id": "c0de0000000000000000000000000008",
+          "span_id": "5ba9000000000008",
+          "kind": "internal",
+          "status": "unset",
+          "status_message": "",
+          "start_ms": 1768477500000,
+          "end_ms": 1768477500125,
+          "attributes": [
+            {
+              "key": "amount",
+              "float": 13.5
+            },
+            {
+              "key": "order_id",
+              "string": "digest-1"
+            },
+            {
+              "key": "partial",
+              "bool": false
+            },
+            {
+              "key": "settle_time",
+              "int": 500
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "events": []
+        },
+        {
+          "name": "store_server.refund",
+          "trace_id": "c0de0000000000000000000000000009",
+          "span_id": "5ba9000000000009",
+          "kind": "internal",
+          "status": "error",
+          "status_message": "failed",
+          "start_ms": 1768477800000,
+          "end_ms": 1768477800125,
+          "attributes": [
+            {
+              "key": "amount",
+              "float": 14.5
+            },
+            {
+              "key": "order_id",
+              "string": "digest-0"
+            },
+            {
+              "key": "partial",
+              "bool": true
+            },
+            {
+              "key": "settle_time",
+              "int": 750
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "events": []
+        }
+      ],
+      "staged": [
+        "2026-01-15T11:40:00.000Z\tc0de0000000000000000000000000001-5ba9000000000001\tpayments\tauthorize\t1\tcorpus\tcorpus-org\tcustomer-kept\tc0de0000000000000000000000000001\t5ba9000000000001\t{\"processor\":\"processor-0\"}\t2026-01-15T11:40:00.125Z\t\\N\tclient\tok\t\t[{\"name\":\"processor_called\",\"time\":\"2026-01-15T11:40:00.005Z\",\"attributes\":{}}]",
+        "2026-01-15T11:45:00.000Z\tc0de0000000000000000000000000002-5ba9000000000002\tpayments\tauthorize\t1\tcorpus\tcorpus-org\t\\N\tc0de0000000000000000000000000002\t5ba9000000000002\t{\"processor\":\"processor-1\"}\t2026-01-15T11:45:00.125Z\t\\N\tclient\tunset\t\t[{\"name\":\"processor_called\",\"time\":\"2026-01-15T11:45:00.005Z\",\"attributes\":{}}]",
+        "2026-01-15T11:50:00.000Z\tc0de0000000000000000000000000003-5ba9000000000003\tpayments\tauthorize\t1\tcorpus\tcorpus-org\t\\N\tc0de0000000000000000000000000003\t5ba9000000000003\t{\"processor\":\"processor-0\"}\t2026-01-15T11:50:00.125Z\t\\N\tclient\terror\tfailed\t[{\"name\":\"processor_called\",\"time\":\"2026-01-15T11:50:00.005Z\",\"attributes\":{}}]",
+        "2026-01-15T11:40:00.000Z\tc0de0000000000000000000000000004-5ba9000000000004\tstore_server\tcheckout\t1\tcorpus\tcorpus-org\tcustomer-kept\tc0de0000000000000000000000000004\t5ba9000000000004\t{\"cart_id\":\"cart_id-0\",\"item_count\":1}\t2026-01-15T11:40:00.125Z\t\\N\tserver\tok\t\t[{\"name\":\"inventory_reserved\",\"time\":\"2026-01-15T11:40:00.005Z\",\"attributes\":{}},{\"name\":\"payment_authorized\",\"time\":\"2026-01-15T11:40:00.005Z\",\"attributes\":{}}]",
+        "2026-01-15T11:45:00.000Z\tc0de0000000000000000000000000005-5ba9000000000005\tstore_server\tcheckout\t1\tcorpus\tcorpus-org\t\\N\tc0de0000000000000000000000000005\t5ba9000000000005\t{\"cart_id\":\"cart_id-1\",\"item_count\":2}\t2026-01-15T11:45:00.125Z\t\\N\tserver\tunset\t\t[{\"name\":\"inventory_reserved\",\"time\":\"2026-01-15T11:45:00.005Z\",\"attributes\":{}},{\"name\":\"payment_authorized\",\"time\":\"2026-01-15T11:45:00.005Z\",\"attributes\":{}}]",
+        "2026-01-15T11:50:00.000Z\tc0de0000000000000000000000000006-5ba9000000000006\tstore_server\tcheckout\t1\tcorpus\tcorpus-org\t\\N\tc0de0000000000000000000000000006\t5ba9000000000006\t{\"cart_id\":\"cart_id-0\",\"item_count\":3}\t2026-01-15T11:50:00.125Z\t\\N\tserver\terror\tfailed\t[{\"name\":\"inventory_reserved\",\"time\":\"2026-01-15T11:50:00.005Z\",\"attributes\":{}},{\"name\":\"payment_authorized\",\"time\":\"2026-01-15T11:50:00.005Z\",\"attributes\":{}}]",
+        "2026-01-15T11:40:00.000Z\tc0de0000000000000000000000000007-5ba9000000000007\tstore_server\trefund\t1\tcorpus\tcorpus-org\tcustomer-kept\tc0de0000000000000000000000000007\t5ba9000000000007\t{\"amount\":12.5,\"order_id\":\"digest-0\",\"partial\":true,\"settle_time\":250}\t2026-01-15T11:40:00.125Z\t\\N\tinternal\tok\t\t[]",
+        "2026-01-15T11:45:00.000Z\tc0de0000000000000000000000000008-5ba9000000000008\tstore_server\trefund\t1\tcorpus\tcorpus-org\t\\N\tc0de0000000000000000000000000008\t5ba9000000000008\t{\"amount\":13.5,\"order_id\":\"digest-1\",\"partial\":false,\"settle_time\":500}\t2026-01-15T11:45:00.125Z\t\\N\tinternal\tunset\t\t[]",
+        "2026-01-15T11:50:00.000Z\tc0de0000000000000000000000000009-5ba9000000000009\tstore_server\trefund\t1\tcorpus\tcorpus-org\t\\N\tc0de0000000000000000000000000009\t5ba9000000000009\t{\"amount\":14.5,\"order_id\":\"digest-0\",\"partial\":true,\"settle_time\":750}\t2026-01-15T11:50:00.125Z\t\\N\tinternal\terror\tfailed\t[]"
+      ],
+      "writer": {
+        "refused": 0,
+        "collisions": 0
+      },
+      "counts": {
+        "inserted": 9,
+        "out_of_range": 0,
+        "erased": 0,
+        "duplicate": 0
+      }
+    },
+    {
+      "name": "every declared metric",
+      "kind": "metrics",
+      "records": [
+        {
+          "name": "ledger.entries_posted",
+          "kind": "counter",
+          "value_int": 1,
+          "time_ms": 1768477200000,
+          "attributes": [
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "customer.id",
+              "string": "customer-kept"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 1
+        },
+        {
+          "name": "ledger.entries_posted",
+          "kind": "counter",
+          "value_int": 2,
+          "time_ms": 1768477500000,
+          "attributes": [
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 2
+        },
+        {
+          "name": "ledger.entries_posted",
+          "kind": "counter",
+          "value_int": 3,
+          "time_ms": 1768477800000,
+          "attributes": [
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 3
+        },
+        {
+          "name": "payments.capture_success",
+          "kind": "gauge",
+          "value_float": 3.5,
+          "time_ms": 1768477200000,
+          "attributes": [
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "customer.id",
+              "string": "customer-kept"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 7
+        },
+        {
+          "name": "payments.capture_success",
+          "kind": "gauge",
+          "value_float": 4.5,
+          "time_ms": 1768477500000,
+          "attributes": [
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 8
+        },
+        {
+          "name": "payments.capture_success",
+          "kind": "gauge",
+          "value_float": 5.5,
+          "time_ms": 1768477800000,
+          "attributes": [
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 9
+        },
+        {
+          "name": "payments.response_size",
+          "kind": "histogram",
+          "value_float": 120.5,
+          "time_ms": 1768477200000,
+          "attributes": [
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "customer.id",
+              "string": "customer-kept"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 10
+        },
+        {
+          "name": "payments.response_size",
+          "kind": "histogram",
+          "value_float": 130.5,
+          "time_ms": 1768477500000,
+          "attributes": [
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 11
+        },
+        {
+          "name": "payments.response_size",
+          "kind": "histogram",
+          "value_float": 140.5,
+          "time_ms": 1768477800000,
+          "attributes": [
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 12
+        },
+        {
+          "name": "payments.settlement_duration",
+          "kind": "histogram",
+          "value_float": 120.5,
+          "time_ms": 1768477200000,
+          "attributes": [
+            {
+              "key": "processor",
+              "string": "processor-0"
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "customer.id",
+              "string": "customer-kept"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 13
+        },
+        {
+          "name": "payments.settlement_duration",
+          "kind": "histogram",
+          "value_float": 130.5,
+          "time_ms": 1768477500000,
+          "attributes": [
+            {
+              "key": "processor",
+              "string": "processor-1"
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 14
+        },
+        {
+          "name": "payments.settlement_duration",
+          "kind": "histogram",
+          "value_float": 140.5,
+          "time_ms": 1768477800000,
+          "attributes": [
+            {
+              "key": "processor",
+              "string": "processor-0"
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 15
+        },
+        {
+          "name": "store_server.cart_size",
+          "kind": "gauge",
+          "value_float": 3.5,
+          "time_ms": 1768477200000,
+          "attributes": [
+            {
+              "key": "route",
+              "string": "route-0"
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "customer.id",
+              "string": "customer-kept"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 22
+        },
+        {
+          "name": "store_server.cart_size",
+          "kind": "gauge",
+          "value_float": 4.5,
+          "time_ms": 1768477500000,
+          "attributes": [
+            {
+              "key": "route",
+              "string": "route-1"
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 23
+        },
+        {
+          "name": "store_server.cart_size",
+          "kind": "gauge",
+          "value_float": 5.5,
+          "time_ms": 1768477800000,
+          "attributes": [
+            {
+              "key": "route",
+              "string": "route-0"
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 24
+        },
+        {
+          "name": "store_server.orders_placed",
+          "kind": "counter",
+          "value_int": 1,
+          "time_ms": 1768477200000,
+          "attributes": [
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "customer.id",
+              "string": "customer-kept"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 25
+        },
+        {
+          "name": "store_server.orders_placed",
+          "kind": "counter",
+          "value_int": 2,
+          "time_ms": 1768477500000,
+          "attributes": [
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 26
+        },
+        {
+          "name": "store_server.orders_placed",
+          "kind": "counter",
+          "value_int": 3,
+          "time_ms": 1768477800000,
+          "attributes": [
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 27
+        },
+        {
+          "name": "store_server.request_duration",
+          "kind": "histogram",
+          "value_float": 120.5,
+          "time_ms": 1768477200000,
+          "attributes": [
+            {
+              "key": "route",
+              "string": "route-0"
+            },
+            {
+              "key": "status",
+              "int": 1
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "customer.id",
+              "string": "customer-kept"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 28
+        },
+        {
+          "name": "store_server.request_duration",
+          "kind": "histogram",
+          "value_float": 130.5,
+          "time_ms": 1768477500000,
+          "attributes": [
+            {
+              "key": "route",
+              "string": "route-1"
+            },
+            {
+              "key": "status",
+              "int": 2
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 29
+        },
+        {
+          "name": "store_server.request_duration",
+          "kind": "histogram",
+          "value_float": 140.5,
+          "time_ms": 1768477800000,
+          "attributes": [
+            {
+              "key": "route",
+              "string": "route-0"
+            },
+            {
+              "key": "status",
+              "int": 3
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 30
+        }
+      ],
+      "staged": [
+        "2026-01-15T11:40:00.000Z\t0b5e0000000000000000000000000001-1\tledger\tentries_posted\t1\tcorpus\tcorpus-org\tcustomer-kept\t\\N\t\\N\t{}\tcounter\t1",
+        "2026-01-15T11:45:00.000Z\t0b5e0000000000000000000000000001-2\tledger\tentries_posted\t1\tcorpus\tcorpus-org\t\\N\t\\N\t\\N\t{}\tcounter\t2",
+        "2026-01-15T11:50:00.000Z\t0b5e0000000000000000000000000001-3\tledger\tentries_posted\t1\tcorpus\tcorpus-org\t\\N\t\\N\t\\N\t{}\tcounter\t3",
+        "2026-01-15T11:40:00.000Z\t0b5e0000000000000000000000000001-7\tpayments\tcapture_success\t1\tcorpus\tcorpus-org\tcustomer-kept\t\\N\t\\N\t{}\tgauge\t3.5",
+        "2026-01-15T11:45:00.000Z\t0b5e0000000000000000000000000001-8\tpayments\tcapture_success\t1\tcorpus\tcorpus-org\t\\N\t\\N\t\\N\t{}\tgauge\t4.5",
+        "2026-01-15T11:50:00.000Z\t0b5e0000000000000000000000000001-9\tpayments\tcapture_success\t1\tcorpus\tcorpus-org\t\\N\t\\N\t\\N\t{}\tgauge\t5.5",
+        "2026-01-15T11:40:00.000Z\t0b5e0000000000000000000000000001-10\tpayments\tresponse_size\t1\tcorpus\tcorpus-org\tcustomer-kept\t\\N\t\\N\t{}\thistogram\t120.5",
+        "2026-01-15T11:45:00.000Z\t0b5e0000000000000000000000000001-11\tpayments\tresponse_size\t1\tcorpus\tcorpus-org\t\\N\t\\N\t\\N\t{}\thistogram\t130.5",
+        "2026-01-15T11:50:00.000Z\t0b5e0000000000000000000000000001-12\tpayments\tresponse_size\t1\tcorpus\tcorpus-org\t\\N\t\\N\t\\N\t{}\thistogram\t140.5",
+        "2026-01-15T11:40:00.000Z\t0b5e0000000000000000000000000001-13\tpayments\tsettlement_duration\t1\tcorpus\tcorpus-org\tcustomer-kept\t\\N\t\\N\t{\"processor\":\"processor-0\"}\thistogram\t120.5",
+        "2026-01-15T11:45:00.000Z\t0b5e0000000000000000000000000001-14\tpayments\tsettlement_duration\t1\tcorpus\tcorpus-org\t\\N\t\\N\t\\N\t{\"processor\":\"processor-1\"}\thistogram\t130.5",
+        "2026-01-15T11:50:00.000Z\t0b5e0000000000000000000000000001-15\tpayments\tsettlement_duration\t1\tcorpus\tcorpus-org\t\\N\t\\N\t\\N\t{\"processor\":\"processor-0\"}\thistogram\t140.5",
+        "2026-01-15T11:40:00.000Z\t0b5e0000000000000000000000000001-22\tstore_server\tcart_size\t1\tcorpus\tcorpus-org\tcustomer-kept\t\\N\t\\N\t{\"route\":\"route-0\"}\tgauge\t3.5",
+        "2026-01-15T11:45:00.000Z\t0b5e0000000000000000000000000001-23\tstore_server\tcart_size\t1\tcorpus\tcorpus-org\t\\N\t\\N\t\\N\t{\"route\":\"route-1\"}\tgauge\t4.5",
+        "2026-01-15T11:50:00.000Z\t0b5e0000000000000000000000000001-24\tstore_server\tcart_size\t1\tcorpus\tcorpus-org\t\\N\t\\N\t\\N\t{\"route\":\"route-0\"}\tgauge\t5.5",
+        "2026-01-15T11:40:00.000Z\t0b5e0000000000000000000000000001-25\tstore_server\torders_placed\t1\tcorpus\tcorpus-org\tcustomer-kept\t\\N\t\\N\t{}\tcounter\t1",
+        "2026-01-15T11:45:00.000Z\t0b5e0000000000000000000000000001-26\tstore_server\torders_placed\t1\tcorpus\tcorpus-org\t\\N\t\\N\t\\N\t{}\tcounter\t2",
+        "2026-01-15T11:50:00.000Z\t0b5e0000000000000000000000000001-27\tstore_server\torders_placed\t1\tcorpus\tcorpus-org\t\\N\t\\N\t\\N\t{}\tcounter\t3",
+        "2026-01-15T11:40:00.000Z\t0b5e0000000000000000000000000001-28\tstore_server\trequest_duration\t1\tcorpus\tcorpus-org\tcustomer-kept\t\\N\t\\N\t{\"route\":\"route-0\",\"status\":1}\thistogram\t120.5",
+        "2026-01-15T11:45:00.000Z\t0b5e0000000000000000000000000001-29\tstore_server\trequest_duration\t1\tcorpus\tcorpus-org\t\\N\t\\N\t\\N\t{\"route\":\"route-1\",\"status\":2}\thistogram\t130.5",
+        "2026-01-15T11:50:00.000Z\t0b5e0000000000000000000000000001-30\tstore_server\trequest_duration\t1\tcorpus\tcorpus-org\t\\N\t\\N\t\\N\t{\"route\":\"route-0\",\"status\":3}\thistogram\t140.5"
+      ],
+      "writer": {
+        "refused": 0,
+        "collisions": 0
+      },
+      "counts": {
+        "inserted": 21,
+        "out_of_range": 0,
+        "erased": 0,
+        "duplicate": 0
+      }
+    },
+    {
+      "name": "every declared log and reported error",
+      "kind": "logs",
+      "records": [
+        {
+          "time_ms": 1768477200000,
+          "severity": "info",
+          "body": "A ledger entry was posted",
+          "attributes": [
+            {
+              "key": "account",
+              "string": "account-0"
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "customer.id",
+              "string": "customer-kept"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            },
+            {
+              "key": "bc.telemetry.log",
+              "string": "ledger.entry_posted"
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 4
+        },
+        {
+          "time_ms": 1768477500000,
+          "severity": "info",
+          "body": "A ledger entry was posted",
+          "attributes": [
+            {
+              "key": "account",
+              "string": "account-1"
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            },
+            {
+              "key": "bc.telemetry.log",
+              "string": "ledger.entry_posted"
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 5
+        },
+        {
+          "time_ms": 1768477800000,
+          "severity": "info",
+          "body": "A ledger entry was posted",
+          "attributes": [
+            {
+              "key": "account",
+              "string": "account-0"
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            },
+            {
+              "key": "bc.telemetry.log",
+              "string": "ledger.entry_posted"
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 6
+        },
+        {
+          "time_ms": 1768477200000,
+          "severity": "warn",
+          "body": "The processor did not answer in time",
+          "attributes": [
+            {
+              "key": "processor",
+              "string": "processor-0"
+            },
+            {
+              "key": "waited",
+              "int": 250
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "customer.id",
+              "string": "customer-kept"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            },
+            {
+              "key": "bc.telemetry.log",
+              "string": "payments.processor_timeout"
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 16
+        },
+        {
+          "time_ms": 1768477500000,
+          "severity": "warn",
+          "body": "The processor did not answer in time",
+          "attributes": [
+            {
+              "key": "processor",
+              "string": "processor-1"
+            },
+            {
+              "key": "waited",
+              "int": 500
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            },
+            {
+              "key": "bc.telemetry.log",
+              "string": "payments.processor_timeout"
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 17
+        },
+        {
+          "time_ms": 1768477800000,
+          "severity": "warn",
+          "body": "The processor did not answer in time",
+          "attributes": [
+            {
+              "key": "processor",
+              "string": "processor-0"
+            },
+            {
+              "key": "waited",
+              "int": 750
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            },
+            {
+              "key": "bc.telemetry.log",
+              "string": "payments.processor_timeout"
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 18
+        },
+        {
+          "time_ms": 1768477200000,
+          "severity": "error",
+          "body": "The processor declined the authorization",
+          "attributes": [
+            {
+              "key": "order_id",
+              "string": "order_id-0"
+            },
+            {
+              "key": "processor_code",
+              "string": "processor_code-0"
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "customer.id",
+              "string": "customer-kept"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            },
+            {
+              "key": "error.category",
+              "string": "payments"
+            },
+            {
+              "key": "error.kind",
+              "int": 1
+            },
+            {
+              "key": "bc.telemetry.log",
+              "string": "payments.authorization_declined"
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 19
+        },
+        {
+          "time_ms": 1768477500000,
+          "severity": "error",
+          "body": "The processor declined the authorization",
+          "attributes": [
+            {
+              "key": "order_id",
+              "string": "order_id-1"
+            },
+            {
+              "key": "processor_code",
+              "string": "processor_code-1"
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            },
+            {
+              "key": "error.category",
+              "string": "payments"
+            },
+            {
+              "key": "error.kind",
+              "int": 1
+            },
+            {
+              "key": "bc.telemetry.log",
+              "string": "payments.authorization_declined"
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 20
+        },
+        {
+          "time_ms": 1768477800000,
+          "severity": "warn",
+          "body": "The processor declined the authorization",
+          "attributes": [
+            {
+              "key": "order_id",
+              "string": "order_id-0"
+            },
+            {
+              "key": "processor_code",
+              "string": "processor_code-0"
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            },
+            {
+              "key": "error.category",
+              "string": "payments"
+            },
+            {
+              "key": "error.kind",
+              "int": 1
+            },
+            {
+              "key": "bc.telemetry.log",
+              "string": "payments.authorization_declined"
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 21
+        },
+        {
+          "time_ms": 1768477200000,
+          "severity": "error",
+          "body": "An order that reached checkout and did not complete",
+          "attributes": [
+            {
+              "key": "order_id",
+              "string": "order_id-0"
+            },
+            {
+              "key": "reason",
+              "string": "reason-0"
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "customer.id",
+              "string": "customer-kept"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            },
+            {
+              "key": "bc.telemetry.log",
+              "string": "store_server.order_failed"
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 31
+        },
+        {
+          "time_ms": 1768477500000,
+          "severity": "error",
+          "body": "An order that reached checkout and did not complete",
+          "attributes": [
+            {
+              "key": "order_id",
+              "string": "order_id-1"
+            },
+            {
+              "key": "reason",
+              "string": "reason-1"
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            },
+            {
+              "key": "bc.telemetry.log",
+              "string": "store_server.order_failed"
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 32
+        },
+        {
+          "time_ms": 1768477800000,
+          "severity": "error",
+          "body": "An order that reached checkout and did not complete",
+          "attributes": [
+            {
+              "key": "order_id",
+              "string": "order_id-0"
+            },
+            {
+              "key": "reason",
+              "string": "reason-0"
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            },
+            {
+              "key": "bc.telemetry.log",
+              "string": "store_server.order_failed"
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 33
+        }
+      ],
+      "staged": [
+        "2026-01-15T11:40:00.000Z\t0b5e0000000000000000000000000001-4\tledger\tentry_posted\t1\tcorpus\tcorpus-org\tcustomer-kept\t\\N\t\\N\t{\"account\":\"account-0\"}\tinfo\tA ledger entry was posted",
+        "2026-01-15T11:45:00.000Z\t0b5e0000000000000000000000000001-5\tledger\tentry_posted\t1\tcorpus\tcorpus-org\t\\N\t\\N\t\\N\t{\"account\":\"account-1\"}\tinfo\tA ledger entry was posted",
+        "2026-01-15T11:50:00.000Z\t0b5e0000000000000000000000000001-6\tledger\tentry_posted\t1\tcorpus\tcorpus-org\t\\N\t\\N\t\\N\t{\"account\":\"account-0\"}\tinfo\tA ledger entry was posted",
+        "2026-01-15T11:40:00.000Z\t0b5e0000000000000000000000000001-16\tpayments\tprocessor_timeout\t1\tcorpus\tcorpus-org\tcustomer-kept\t\\N\t\\N\t{\"processor\":\"processor-0\",\"waited\":250}\twarn\tThe processor did not answer in time",
+        "2026-01-15T11:45:00.000Z\t0b5e0000000000000000000000000001-17\tpayments\tprocessor_timeout\t1\tcorpus\tcorpus-org\t\\N\t\\N\t\\N\t{\"processor\":\"processor-1\",\"waited\":500}\twarn\tThe processor did not answer in time",
+        "2026-01-15T11:50:00.000Z\t0b5e0000000000000000000000000001-18\tpayments\tprocessor_timeout\t1\tcorpus\tcorpus-org\t\\N\t\\N\t\\N\t{\"processor\":\"processor-0\",\"waited\":750}\twarn\tThe processor did not answer in time",
+        "2026-01-15T11:40:00.000Z\t0b5e0000000000000000000000000001-19\tpayments\tauthorization_declined\t1\tcorpus\tcorpus-org\tcustomer-kept\t\\N\t\\N\t{\"error.category\":\"payments\",\"error.kind\":1,\"order_id\":\"order_id-0\",\"processor_code\":\"processor_code-0\"}\terror\tThe processor declined the authorization",
+        "2026-01-15T11:45:00.000Z\t0b5e0000000000000000000000000001-20\tpayments\tauthorization_declined\t1\tcorpus\tcorpus-org\t\\N\t\\N\t\\N\t{\"error.category\":\"payments\",\"error.kind\":1,\"order_id\":\"order_id-1\",\"processor_code\":\"processor_code-1\"}\terror\tThe processor declined the authorization",
+        "2026-01-15T11:50:00.000Z\t0b5e0000000000000000000000000001-21\tpayments\tauthorization_declined\t1\tcorpus\tcorpus-org\t\\N\t\\N\t\\N\t{\"error.category\":\"payments\",\"error.kind\":1,\"order_id\":\"order_id-0\",\"processor_code\":\"processor_code-0\"}\twarn\tThe processor declined the authorization",
+        "2026-01-15T11:40:00.000Z\t0b5e0000000000000000000000000001-31\tstore_server\torder_failed\t1\tcorpus\tcorpus-org\tcustomer-kept\t\\N\t\\N\t{\"order_id\":\"order_id-0\",\"reason\":\"reason-0\"}\terror\tAn order that reached checkout and did not complete",
+        "2026-01-15T11:45:00.000Z\t0b5e0000000000000000000000000001-32\tstore_server\torder_failed\t1\tcorpus\tcorpus-org\t\\N\t\\N\t\\N\t{\"order_id\":\"order_id-1\",\"reason\":\"reason-1\"}\terror\tAn order that reached checkout and did not complete",
+        "2026-01-15T11:50:00.000Z\t0b5e0000000000000000000000000001-33\tstore_server\torder_failed\t1\tcorpus\tcorpus-org\t\\N\t\\N\t\\N\t{\"order_id\":\"order_id-0\",\"reason\":\"reason-0\"}\terror\tAn order that reached checkout and did not complete"
+      ],
+      "writer": {
+        "refused": 0,
+        "collisions": 0
+      },
+      "counts": {
+        "inserted": 12,
+        "out_of_range": 0,
+        "erased": 0,
+        "duplicate": 0
+      }
+    },
+    {
+      "name": "every declared span, retried",
+      "kind": "spans",
+      "records": [
+        {
+          "name": "payments.authorize",
+          "trace_id": "c0de0000000000000000000000000001",
+          "span_id": "5ba9000000000001",
+          "kind": "client",
+          "status": "ok",
+          "status_message": "",
+          "start_ms": 1768477200000,
+          "end_ms": 1768477200125,
+          "attributes": [
+            {
+              "key": "processor",
+              "string": "processor-0"
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "customer.id",
+              "string": "customer-kept"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "events": [
+            {
+              "name": "processor_called",
+              "time_ms": 1768477200005,
+              "attributes": []
+            }
+          ]
+        },
+        {
+          "name": "payments.authorize",
+          "trace_id": "c0de0000000000000000000000000002",
+          "span_id": "5ba9000000000002",
+          "kind": "client",
+          "status": "unset",
+          "status_message": "",
+          "start_ms": 1768477500000,
+          "end_ms": 1768477500125,
+          "attributes": [
+            {
+              "key": "processor",
+              "string": "processor-1"
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "events": [
+            {
+              "name": "processor_called",
+              "time_ms": 1768477500005,
+              "attributes": []
+            }
+          ]
+        },
+        {
+          "name": "payments.authorize",
+          "trace_id": "c0de0000000000000000000000000003",
+          "span_id": "5ba9000000000003",
+          "kind": "client",
+          "status": "error",
+          "status_message": "failed",
+          "start_ms": 1768477800000,
+          "end_ms": 1768477800125,
+          "attributes": [
+            {
+              "key": "processor",
+              "string": "processor-0"
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "events": [
+            {
+              "name": "processor_called",
+              "time_ms": 1768477800005,
+              "attributes": []
+            }
+          ]
+        },
+        {
+          "name": "store_server.checkout",
+          "trace_id": "c0de0000000000000000000000000004",
+          "span_id": "5ba9000000000004",
+          "kind": "server",
+          "status": "ok",
+          "status_message": "",
+          "start_ms": 1768477200000,
+          "end_ms": 1768477200125,
+          "attributes": [
+            {
+              "key": "cart_id",
+              "string": "cart_id-0"
+            },
+            {
+              "key": "item_count",
+              "int": 1
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "customer.id",
+              "string": "customer-kept"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "events": [
+            {
+              "name": "inventory_reserved",
+              "time_ms": 1768477200005,
+              "attributes": []
+            },
+            {
+              "name": "payment_authorized",
+              "time_ms": 1768477200005,
+              "attributes": []
+            }
+          ]
+        },
+        {
+          "name": "store_server.checkout",
+          "trace_id": "c0de0000000000000000000000000005",
+          "span_id": "5ba9000000000005",
+          "kind": "server",
+          "status": "unset",
+          "status_message": "",
+          "start_ms": 1768477500000,
+          "end_ms": 1768477500125,
+          "attributes": [
+            {
+              "key": "cart_id",
+              "string": "cart_id-1"
+            },
+            {
+              "key": "item_count",
+              "int": 2
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "events": [
+            {
+              "name": "inventory_reserved",
+              "time_ms": 1768477500005,
+              "attributes": []
+            },
+            {
+              "name": "payment_authorized",
+              "time_ms": 1768477500005,
+              "attributes": []
+            }
+          ]
+        },
+        {
+          "name": "store_server.checkout",
+          "trace_id": "c0de0000000000000000000000000006",
+          "span_id": "5ba9000000000006",
+          "kind": "server",
+          "status": "error",
+          "status_message": "failed",
+          "start_ms": 1768477800000,
+          "end_ms": 1768477800125,
+          "attributes": [
+            {
+              "key": "cart_id",
+              "string": "cart_id-0"
+            },
+            {
+              "key": "item_count",
+              "int": 3
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "events": [
+            {
+              "name": "inventory_reserved",
+              "time_ms": 1768477800005,
+              "attributes": []
+            },
+            {
+              "name": "payment_authorized",
+              "time_ms": 1768477800005,
+              "attributes": []
+            }
+          ]
+        },
+        {
+          "name": "store_server.refund",
+          "trace_id": "c0de0000000000000000000000000007",
+          "span_id": "5ba9000000000007",
+          "kind": "internal",
+          "status": "ok",
+          "status_message": "",
+          "start_ms": 1768477200000,
+          "end_ms": 1768477200125,
+          "attributes": [
+            {
+              "key": "amount",
+              "float": 12.5
+            },
+            {
+              "key": "order_id",
+              "string": "digest-0"
+            },
+            {
+              "key": "partial",
+              "bool": true
+            },
+            {
+              "key": "settle_time",
+              "int": 250
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "customer.id",
+              "string": "customer-kept"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "events": []
+        },
+        {
+          "name": "store_server.refund",
+          "trace_id": "c0de0000000000000000000000000008",
+          "span_id": "5ba9000000000008",
+          "kind": "internal",
+          "status": "unset",
+          "status_message": "",
+          "start_ms": 1768477500000,
+          "end_ms": 1768477500125,
+          "attributes": [
+            {
+              "key": "amount",
+              "float": 13.5
+            },
+            {
+              "key": "order_id",
+              "string": "digest-1"
+            },
+            {
+              "key": "partial",
+              "bool": false
+            },
+            {
+              "key": "settle_time",
+              "int": 500
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "events": []
+        },
+        {
+          "name": "store_server.refund",
+          "trace_id": "c0de0000000000000000000000000009",
+          "span_id": "5ba9000000000009",
+          "kind": "internal",
+          "status": "error",
+          "status_message": "failed",
+          "start_ms": 1768477800000,
+          "end_ms": 1768477800125,
+          "attributes": [
+            {
+              "key": "amount",
+              "float": 14.5
+            },
+            {
+              "key": "order_id",
+              "string": "digest-0"
+            },
+            {
+              "key": "partial",
+              "bool": true
+            },
+            {
+              "key": "settle_time",
+              "int": 750
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "events": []
+        }
+      ],
+      "staged": [
+        "2026-01-15T11:40:00.000Z\tc0de0000000000000000000000000001-5ba9000000000001\tpayments\tauthorize\t1\tcorpus\tcorpus-org\tcustomer-kept\tc0de0000000000000000000000000001\t5ba9000000000001\t{\"processor\":\"processor-0\"}\t2026-01-15T11:40:00.125Z\t\\N\tclient\tok\t\t[{\"name\":\"processor_called\",\"time\":\"2026-01-15T11:40:00.005Z\",\"attributes\":{}}]",
+        "2026-01-15T11:45:00.000Z\tc0de0000000000000000000000000002-5ba9000000000002\tpayments\tauthorize\t1\tcorpus\tcorpus-org\t\\N\tc0de0000000000000000000000000002\t5ba9000000000002\t{\"processor\":\"processor-1\"}\t2026-01-15T11:45:00.125Z\t\\N\tclient\tunset\t\t[{\"name\":\"processor_called\",\"time\":\"2026-01-15T11:45:00.005Z\",\"attributes\":{}}]",
+        "2026-01-15T11:50:00.000Z\tc0de0000000000000000000000000003-5ba9000000000003\tpayments\tauthorize\t1\tcorpus\tcorpus-org\t\\N\tc0de0000000000000000000000000003\t5ba9000000000003\t{\"processor\":\"processor-0\"}\t2026-01-15T11:50:00.125Z\t\\N\tclient\terror\tfailed\t[{\"name\":\"processor_called\",\"time\":\"2026-01-15T11:50:00.005Z\",\"attributes\":{}}]",
+        "2026-01-15T11:40:00.000Z\tc0de0000000000000000000000000004-5ba9000000000004\tstore_server\tcheckout\t1\tcorpus\tcorpus-org\tcustomer-kept\tc0de0000000000000000000000000004\t5ba9000000000004\t{\"cart_id\":\"cart_id-0\",\"item_count\":1}\t2026-01-15T11:40:00.125Z\t\\N\tserver\tok\t\t[{\"name\":\"inventory_reserved\",\"time\":\"2026-01-15T11:40:00.005Z\",\"attributes\":{}},{\"name\":\"payment_authorized\",\"time\":\"2026-01-15T11:40:00.005Z\",\"attributes\":{}}]",
+        "2026-01-15T11:45:00.000Z\tc0de0000000000000000000000000005-5ba9000000000005\tstore_server\tcheckout\t1\tcorpus\tcorpus-org\t\\N\tc0de0000000000000000000000000005\t5ba9000000000005\t{\"cart_id\":\"cart_id-1\",\"item_count\":2}\t2026-01-15T11:45:00.125Z\t\\N\tserver\tunset\t\t[{\"name\":\"inventory_reserved\",\"time\":\"2026-01-15T11:45:00.005Z\",\"attributes\":{}},{\"name\":\"payment_authorized\",\"time\":\"2026-01-15T11:45:00.005Z\",\"attributes\":{}}]",
+        "2026-01-15T11:50:00.000Z\tc0de0000000000000000000000000006-5ba9000000000006\tstore_server\tcheckout\t1\tcorpus\tcorpus-org\t\\N\tc0de0000000000000000000000000006\t5ba9000000000006\t{\"cart_id\":\"cart_id-0\",\"item_count\":3}\t2026-01-15T11:50:00.125Z\t\\N\tserver\terror\tfailed\t[{\"name\":\"inventory_reserved\",\"time\":\"2026-01-15T11:50:00.005Z\",\"attributes\":{}},{\"name\":\"payment_authorized\",\"time\":\"2026-01-15T11:50:00.005Z\",\"attributes\":{}}]",
+        "2026-01-15T11:40:00.000Z\tc0de0000000000000000000000000007-5ba9000000000007\tstore_server\trefund\t1\tcorpus\tcorpus-org\tcustomer-kept\tc0de0000000000000000000000000007\t5ba9000000000007\t{\"amount\":12.5,\"order_id\":\"digest-0\",\"partial\":true,\"settle_time\":250}\t2026-01-15T11:40:00.125Z\t\\N\tinternal\tok\t\t[]",
+        "2026-01-15T11:45:00.000Z\tc0de0000000000000000000000000008-5ba9000000000008\tstore_server\trefund\t1\tcorpus\tcorpus-org\t\\N\tc0de0000000000000000000000000008\t5ba9000000000008\t{\"amount\":13.5,\"order_id\":\"digest-1\",\"partial\":false,\"settle_time\":500}\t2026-01-15T11:45:00.125Z\t\\N\tinternal\tunset\t\t[]",
+        "2026-01-15T11:50:00.000Z\tc0de0000000000000000000000000009-5ba9000000000009\tstore_server\trefund\t1\tcorpus\tcorpus-org\t\\N\tc0de0000000000000000000000000009\t5ba9000000000009\t{\"amount\":14.5,\"order_id\":\"digest-0\",\"partial\":true,\"settle_time\":750}\t2026-01-15T11:50:00.125Z\t\\N\tinternal\terror\tfailed\t[]"
+      ],
+      "writer": {
+        "refused": 0,
+        "collisions": 0
+      },
+      "counts": {
+        "inserted": 0,
+        "out_of_range": 0,
+        "erased": 0,
+        "duplicate": 9
+      }
+    },
+    {
+      "name": "every declared metric, retried",
+      "kind": "metrics",
+      "records": [
+        {
+          "name": "ledger.entries_posted",
+          "kind": "counter",
+          "value_int": 1,
+          "time_ms": 1768477200000,
+          "attributes": [
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "customer.id",
+              "string": "customer-kept"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 1
+        },
+        {
+          "name": "ledger.entries_posted",
+          "kind": "counter",
+          "value_int": 2,
+          "time_ms": 1768477500000,
+          "attributes": [
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 2
+        },
+        {
+          "name": "ledger.entries_posted",
+          "kind": "counter",
+          "value_int": 3,
+          "time_ms": 1768477800000,
+          "attributes": [
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 3
+        },
+        {
+          "name": "payments.capture_success",
+          "kind": "gauge",
+          "value_float": 3.5,
+          "time_ms": 1768477200000,
+          "attributes": [
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "customer.id",
+              "string": "customer-kept"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 7
+        },
+        {
+          "name": "payments.capture_success",
+          "kind": "gauge",
+          "value_float": 4.5,
+          "time_ms": 1768477500000,
+          "attributes": [
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 8
+        },
+        {
+          "name": "payments.capture_success",
+          "kind": "gauge",
+          "value_float": 5.5,
+          "time_ms": 1768477800000,
+          "attributes": [
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 9
+        },
+        {
+          "name": "payments.response_size",
+          "kind": "histogram",
+          "value_float": 120.5,
+          "time_ms": 1768477200000,
+          "attributes": [
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "customer.id",
+              "string": "customer-kept"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 10
+        },
+        {
+          "name": "payments.response_size",
+          "kind": "histogram",
+          "value_float": 130.5,
+          "time_ms": 1768477500000,
+          "attributes": [
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 11
+        },
+        {
+          "name": "payments.response_size",
+          "kind": "histogram",
+          "value_float": 140.5,
+          "time_ms": 1768477800000,
+          "attributes": [
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 12
+        },
+        {
+          "name": "payments.settlement_duration",
+          "kind": "histogram",
+          "value_float": 120.5,
+          "time_ms": 1768477200000,
+          "attributes": [
+            {
+              "key": "processor",
+              "string": "processor-0"
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "customer.id",
+              "string": "customer-kept"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 13
+        },
+        {
+          "name": "payments.settlement_duration",
+          "kind": "histogram",
+          "value_float": 130.5,
+          "time_ms": 1768477500000,
+          "attributes": [
+            {
+              "key": "processor",
+              "string": "processor-1"
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 14
+        },
+        {
+          "name": "payments.settlement_duration",
+          "kind": "histogram",
+          "value_float": 140.5,
+          "time_ms": 1768477800000,
+          "attributes": [
+            {
+              "key": "processor",
+              "string": "processor-0"
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 15
+        },
+        {
+          "name": "store_server.cart_size",
+          "kind": "gauge",
+          "value_float": 3.5,
+          "time_ms": 1768477200000,
+          "attributes": [
+            {
+              "key": "route",
+              "string": "route-0"
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "customer.id",
+              "string": "customer-kept"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 22
+        },
+        {
+          "name": "store_server.cart_size",
+          "kind": "gauge",
+          "value_float": 4.5,
+          "time_ms": 1768477500000,
+          "attributes": [
+            {
+              "key": "route",
+              "string": "route-1"
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 23
+        },
+        {
+          "name": "store_server.cart_size",
+          "kind": "gauge",
+          "value_float": 5.5,
+          "time_ms": 1768477800000,
+          "attributes": [
+            {
+              "key": "route",
+              "string": "route-0"
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 24
+        },
+        {
+          "name": "store_server.orders_placed",
+          "kind": "counter",
+          "value_int": 1,
+          "time_ms": 1768477200000,
+          "attributes": [
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "customer.id",
+              "string": "customer-kept"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 25
+        },
+        {
+          "name": "store_server.orders_placed",
+          "kind": "counter",
+          "value_int": 2,
+          "time_ms": 1768477500000,
+          "attributes": [
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 26
+        },
+        {
+          "name": "store_server.orders_placed",
+          "kind": "counter",
+          "value_int": 3,
+          "time_ms": 1768477800000,
+          "attributes": [
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 27
+        },
+        {
+          "name": "store_server.request_duration",
+          "kind": "histogram",
+          "value_float": 120.5,
+          "time_ms": 1768477200000,
+          "attributes": [
+            {
+              "key": "route",
+              "string": "route-0"
+            },
+            {
+              "key": "status",
+              "int": 1
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "customer.id",
+              "string": "customer-kept"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 28
+        },
+        {
+          "name": "store_server.request_duration",
+          "kind": "histogram",
+          "value_float": 130.5,
+          "time_ms": 1768477500000,
+          "attributes": [
+            {
+              "key": "route",
+              "string": "route-1"
+            },
+            {
+              "key": "status",
+              "int": 2
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 29
+        },
+        {
+          "name": "store_server.request_duration",
+          "kind": "histogram",
+          "value_float": 140.5,
+          "time_ms": 1768477800000,
+          "attributes": [
+            {
+              "key": "route",
+              "string": "route-0"
+            },
+            {
+              "key": "status",
+              "int": 3
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 30
+        }
+      ],
+      "staged": [
+        "2026-01-15T11:40:00.000Z\t0b5e0000000000000000000000000001-1\tledger\tentries_posted\t1\tcorpus\tcorpus-org\tcustomer-kept\t\\N\t\\N\t{}\tcounter\t1",
+        "2026-01-15T11:45:00.000Z\t0b5e0000000000000000000000000001-2\tledger\tentries_posted\t1\tcorpus\tcorpus-org\t\\N\t\\N\t\\N\t{}\tcounter\t2",
+        "2026-01-15T11:50:00.000Z\t0b5e0000000000000000000000000001-3\tledger\tentries_posted\t1\tcorpus\tcorpus-org\t\\N\t\\N\t\\N\t{}\tcounter\t3",
+        "2026-01-15T11:40:00.000Z\t0b5e0000000000000000000000000001-7\tpayments\tcapture_success\t1\tcorpus\tcorpus-org\tcustomer-kept\t\\N\t\\N\t{}\tgauge\t3.5",
+        "2026-01-15T11:45:00.000Z\t0b5e0000000000000000000000000001-8\tpayments\tcapture_success\t1\tcorpus\tcorpus-org\t\\N\t\\N\t\\N\t{}\tgauge\t4.5",
+        "2026-01-15T11:50:00.000Z\t0b5e0000000000000000000000000001-9\tpayments\tcapture_success\t1\tcorpus\tcorpus-org\t\\N\t\\N\t\\N\t{}\tgauge\t5.5",
+        "2026-01-15T11:40:00.000Z\t0b5e0000000000000000000000000001-10\tpayments\tresponse_size\t1\tcorpus\tcorpus-org\tcustomer-kept\t\\N\t\\N\t{}\thistogram\t120.5",
+        "2026-01-15T11:45:00.000Z\t0b5e0000000000000000000000000001-11\tpayments\tresponse_size\t1\tcorpus\tcorpus-org\t\\N\t\\N\t\\N\t{}\thistogram\t130.5",
+        "2026-01-15T11:50:00.000Z\t0b5e0000000000000000000000000001-12\tpayments\tresponse_size\t1\tcorpus\tcorpus-org\t\\N\t\\N\t\\N\t{}\thistogram\t140.5",
+        "2026-01-15T11:40:00.000Z\t0b5e0000000000000000000000000001-13\tpayments\tsettlement_duration\t1\tcorpus\tcorpus-org\tcustomer-kept\t\\N\t\\N\t{\"processor\":\"processor-0\"}\thistogram\t120.5",
+        "2026-01-15T11:45:00.000Z\t0b5e0000000000000000000000000001-14\tpayments\tsettlement_duration\t1\tcorpus\tcorpus-org\t\\N\t\\N\t\\N\t{\"processor\":\"processor-1\"}\thistogram\t130.5",
+        "2026-01-15T11:50:00.000Z\t0b5e0000000000000000000000000001-15\tpayments\tsettlement_duration\t1\tcorpus\tcorpus-org\t\\N\t\\N\t\\N\t{\"processor\":\"processor-0\"}\thistogram\t140.5",
+        "2026-01-15T11:40:00.000Z\t0b5e0000000000000000000000000001-22\tstore_server\tcart_size\t1\tcorpus\tcorpus-org\tcustomer-kept\t\\N\t\\N\t{\"route\":\"route-0\"}\tgauge\t3.5",
+        "2026-01-15T11:45:00.000Z\t0b5e0000000000000000000000000001-23\tstore_server\tcart_size\t1\tcorpus\tcorpus-org\t\\N\t\\N\t\\N\t{\"route\":\"route-1\"}\tgauge\t4.5",
+        "2026-01-15T11:50:00.000Z\t0b5e0000000000000000000000000001-24\tstore_server\tcart_size\t1\tcorpus\tcorpus-org\t\\N\t\\N\t\\N\t{\"route\":\"route-0\"}\tgauge\t5.5",
+        "2026-01-15T11:40:00.000Z\t0b5e0000000000000000000000000001-25\tstore_server\torders_placed\t1\tcorpus\tcorpus-org\tcustomer-kept\t\\N\t\\N\t{}\tcounter\t1",
+        "2026-01-15T11:45:00.000Z\t0b5e0000000000000000000000000001-26\tstore_server\torders_placed\t1\tcorpus\tcorpus-org\t\\N\t\\N\t\\N\t{}\tcounter\t2",
+        "2026-01-15T11:50:00.000Z\t0b5e0000000000000000000000000001-27\tstore_server\torders_placed\t1\tcorpus\tcorpus-org\t\\N\t\\N\t\\N\t{}\tcounter\t3",
+        "2026-01-15T11:40:00.000Z\t0b5e0000000000000000000000000001-28\tstore_server\trequest_duration\t1\tcorpus\tcorpus-org\tcustomer-kept\t\\N\t\\N\t{\"route\":\"route-0\",\"status\":1}\thistogram\t120.5",
+        "2026-01-15T11:45:00.000Z\t0b5e0000000000000000000000000001-29\tstore_server\trequest_duration\t1\tcorpus\tcorpus-org\t\\N\t\\N\t\\N\t{\"route\":\"route-1\",\"status\":2}\thistogram\t130.5",
+        "2026-01-15T11:50:00.000Z\t0b5e0000000000000000000000000001-30\tstore_server\trequest_duration\t1\tcorpus\tcorpus-org\t\\N\t\\N\t\\N\t{\"route\":\"route-0\",\"status\":3}\thistogram\t140.5"
+      ],
+      "writer": {
+        "refused": 0,
+        "collisions": 0
+      },
+      "counts": {
+        "inserted": 0,
+        "out_of_range": 0,
+        "erased": 0,
+        "duplicate": 21
+      }
+    },
+    {
+      "name": "every declared log and reported error, retried",
+      "kind": "logs",
+      "records": [
+        {
+          "time_ms": 1768477200000,
+          "severity": "info",
+          "body": "A ledger entry was posted",
+          "attributes": [
+            {
+              "key": "account",
+              "string": "account-0"
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "customer.id",
+              "string": "customer-kept"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            },
+            {
+              "key": "bc.telemetry.log",
+              "string": "ledger.entry_posted"
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 4
+        },
+        {
+          "time_ms": 1768477500000,
+          "severity": "info",
+          "body": "A ledger entry was posted",
+          "attributes": [
+            {
+              "key": "account",
+              "string": "account-1"
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            },
+            {
+              "key": "bc.telemetry.log",
+              "string": "ledger.entry_posted"
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 5
+        },
+        {
+          "time_ms": 1768477800000,
+          "severity": "info",
+          "body": "A ledger entry was posted",
+          "attributes": [
+            {
+              "key": "account",
+              "string": "account-0"
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            },
+            {
+              "key": "bc.telemetry.log",
+              "string": "ledger.entry_posted"
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 6
+        },
+        {
+          "time_ms": 1768477200000,
+          "severity": "warn",
+          "body": "The processor did not answer in time",
+          "attributes": [
+            {
+              "key": "processor",
+              "string": "processor-0"
+            },
+            {
+              "key": "waited",
+              "int": 250
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "customer.id",
+              "string": "customer-kept"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            },
+            {
+              "key": "bc.telemetry.log",
+              "string": "payments.processor_timeout"
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 16
+        },
+        {
+          "time_ms": 1768477500000,
+          "severity": "warn",
+          "body": "The processor did not answer in time",
+          "attributes": [
+            {
+              "key": "processor",
+              "string": "processor-1"
+            },
+            {
+              "key": "waited",
+              "int": 500
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            },
+            {
+              "key": "bc.telemetry.log",
+              "string": "payments.processor_timeout"
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 17
+        },
+        {
+          "time_ms": 1768477800000,
+          "severity": "warn",
+          "body": "The processor did not answer in time",
+          "attributes": [
+            {
+              "key": "processor",
+              "string": "processor-0"
+            },
+            {
+              "key": "waited",
+              "int": 750
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            },
+            {
+              "key": "bc.telemetry.log",
+              "string": "payments.processor_timeout"
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 18
+        },
+        {
+          "time_ms": 1768477200000,
+          "severity": "error",
+          "body": "The processor declined the authorization",
+          "attributes": [
+            {
+              "key": "order_id",
+              "string": "order_id-0"
+            },
+            {
+              "key": "processor_code",
+              "string": "processor_code-0"
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "customer.id",
+              "string": "customer-kept"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            },
+            {
+              "key": "error.category",
+              "string": "payments"
+            },
+            {
+              "key": "error.kind",
+              "int": 1
+            },
+            {
+              "key": "bc.telemetry.log",
+              "string": "payments.authorization_declined"
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 19
+        },
+        {
+          "time_ms": 1768477500000,
+          "severity": "error",
+          "body": "The processor declined the authorization",
+          "attributes": [
+            {
+              "key": "order_id",
+              "string": "order_id-1"
+            },
+            {
+              "key": "processor_code",
+              "string": "processor_code-1"
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            },
+            {
+              "key": "error.category",
+              "string": "payments"
+            },
+            {
+              "key": "error.kind",
+              "int": 1
+            },
+            {
+              "key": "bc.telemetry.log",
+              "string": "payments.authorization_declined"
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 20
+        },
+        {
+          "time_ms": 1768477800000,
+          "severity": "warn",
+          "body": "The processor declined the authorization",
+          "attributes": [
+            {
+              "key": "order_id",
+              "string": "order_id-0"
+            },
+            {
+              "key": "processor_code",
+              "string": "processor_code-0"
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            },
+            {
+              "key": "error.category",
+              "string": "payments"
+            },
+            {
+              "key": "error.kind",
+              "int": 1
+            },
+            {
+              "key": "bc.telemetry.log",
+              "string": "payments.authorization_declined"
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 21
+        },
+        {
+          "time_ms": 1768477200000,
+          "severity": "error",
+          "body": "An order that reached checkout and did not complete",
+          "attributes": [
+            {
+              "key": "order_id",
+              "string": "order_id-0"
+            },
+            {
+              "key": "reason",
+              "string": "reason-0"
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "customer.id",
+              "string": "customer-kept"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            },
+            {
+              "key": "bc.telemetry.log",
+              "string": "store_server.order_failed"
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 31
+        },
+        {
+          "time_ms": 1768477500000,
+          "severity": "error",
+          "body": "An order that reached checkout and did not complete",
+          "attributes": [
+            {
+              "key": "order_id",
+              "string": "order_id-1"
+            },
+            {
+              "key": "reason",
+              "string": "reason-1"
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            },
+            {
+              "key": "bc.telemetry.log",
+              "string": "store_server.order_failed"
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 32
+        },
+        {
+          "time_ms": 1768477800000,
+          "severity": "error",
+          "body": "An order that reached checkout and did not complete",
+          "attributes": [
+            {
+              "key": "order_id",
+              "string": "order_id-0"
+            },
+            {
+              "key": "reason",
+              "string": "reason-0"
+            },
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            },
+            {
+              "key": "bc.telemetry.log",
+              "string": "store_server.order_failed"
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 33
+        }
+      ],
+      "staged": [
+        "2026-01-15T11:40:00.000Z\t0b5e0000000000000000000000000001-4\tledger\tentry_posted\t1\tcorpus\tcorpus-org\tcustomer-kept\t\\N\t\\N\t{\"account\":\"account-0\"}\tinfo\tA ledger entry was posted",
+        "2026-01-15T11:45:00.000Z\t0b5e0000000000000000000000000001-5\tledger\tentry_posted\t1\tcorpus\tcorpus-org\t\\N\t\\N\t\\N\t{\"account\":\"account-1\"}\tinfo\tA ledger entry was posted",
+        "2026-01-15T11:50:00.000Z\t0b5e0000000000000000000000000001-6\tledger\tentry_posted\t1\tcorpus\tcorpus-org\t\\N\t\\N\t\\N\t{\"account\":\"account-0\"}\tinfo\tA ledger entry was posted",
+        "2026-01-15T11:40:00.000Z\t0b5e0000000000000000000000000001-16\tpayments\tprocessor_timeout\t1\tcorpus\tcorpus-org\tcustomer-kept\t\\N\t\\N\t{\"processor\":\"processor-0\",\"waited\":250}\twarn\tThe processor did not answer in time",
+        "2026-01-15T11:45:00.000Z\t0b5e0000000000000000000000000001-17\tpayments\tprocessor_timeout\t1\tcorpus\tcorpus-org\t\\N\t\\N\t\\N\t{\"processor\":\"processor-1\",\"waited\":500}\twarn\tThe processor did not answer in time",
+        "2026-01-15T11:50:00.000Z\t0b5e0000000000000000000000000001-18\tpayments\tprocessor_timeout\t1\tcorpus\tcorpus-org\t\\N\t\\N\t\\N\t{\"processor\":\"processor-0\",\"waited\":750}\twarn\tThe processor did not answer in time",
+        "2026-01-15T11:40:00.000Z\t0b5e0000000000000000000000000001-19\tpayments\tauthorization_declined\t1\tcorpus\tcorpus-org\tcustomer-kept\t\\N\t\\N\t{\"error.category\":\"payments\",\"error.kind\":1,\"order_id\":\"order_id-0\",\"processor_code\":\"processor_code-0\"}\terror\tThe processor declined the authorization",
+        "2026-01-15T11:45:00.000Z\t0b5e0000000000000000000000000001-20\tpayments\tauthorization_declined\t1\tcorpus\tcorpus-org\t\\N\t\\N\t\\N\t{\"error.category\":\"payments\",\"error.kind\":1,\"order_id\":\"order_id-1\",\"processor_code\":\"processor_code-1\"}\terror\tThe processor declined the authorization",
+        "2026-01-15T11:50:00.000Z\t0b5e0000000000000000000000000001-21\tpayments\tauthorization_declined\t1\tcorpus\tcorpus-org\t\\N\t\\N\t\\N\t{\"error.category\":\"payments\",\"error.kind\":1,\"order_id\":\"order_id-0\",\"processor_code\":\"processor_code-0\"}\twarn\tThe processor declined the authorization",
+        "2026-01-15T11:40:00.000Z\t0b5e0000000000000000000000000001-31\tstore_server\torder_failed\t1\tcorpus\tcorpus-org\tcustomer-kept\t\\N\t\\N\t{\"order_id\":\"order_id-0\",\"reason\":\"reason-0\"}\terror\tAn order that reached checkout and did not complete",
+        "2026-01-15T11:45:00.000Z\t0b5e0000000000000000000000000001-32\tstore_server\torder_failed\t1\tcorpus\tcorpus-org\t\\N\t\\N\t\\N\t{\"order_id\":\"order_id-1\",\"reason\":\"reason-1\"}\terror\tAn order that reached checkout and did not complete",
+        "2026-01-15T11:50:00.000Z\t0b5e0000000000000000000000000001-33\tstore_server\torder_failed\t1\tcorpus\tcorpus-org\t\\N\t\\N\t\\N\t{\"order_id\":\"order_id-0\",\"reason\":\"reason-0\"}\terror\tAn order that reached checkout and did not complete"
+      ],
+      "writer": {
+        "refused": 0,
+        "collisions": 0
+      },
+      "counts": {
+        "inserted": 0,
+        "out_of_range": 0,
+        "erased": 0,
+        "duplicate": 12
+      }
+    },
+    {
+      "name": "the rules, for spans",
+      "kind": "spans",
+      "records": [
+        {
+          "name": "corpus.rules.undeclared",
+          "trace_id": "c0de000000000000000000000000000a",
+          "span_id": "5ba900000000000a",
+          "parent_span_id": "5ba9000000000000",
+          "kind": "server",
+          "status": "unset",
+          "status_message": "",
+          "start_ms": 1768477860000,
+          "end_ms": 1768477860040,
+          "attributes": [
+            {
+              "key": "service.name",
+              "string": "another-service"
+            },
+            {
+              "key": "route",
+              "string": "/health"
+            }
+          ],
+          "events": [
+            {
+              "name": "noted",
+              "time_ms": 1768477860001,
+              "attributes": [
+                {
+                  "key": "service.name",
+                  "string": "another-service"
+                },
+                {
+                  "key": "route",
+                  "string": "/health"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "corpus.rules.before_every_partition",
+          "trace_id": "c0de000000000000000000000000000b",
+          "span_id": "5ba900000000000b",
+          "parent_span_id": "5ba9000000000000",
+          "kind": "server",
+          "status": "unset",
+          "status_message": "",
+          "start_ms": 1768046400000,
+          "end_ms": 1768046400040,
+          "attributes": [],
+          "events": [
+            {
+              "name": "noted",
+              "time_ms": 1768046400001,
+              "attributes": []
+            }
+          ]
+        },
+        {
+          "name": "corpus.rules.after_every_partition",
+          "trace_id": "c0de000000000000000000000000000c",
+          "span_id": "5ba900000000000c",
+          "parent_span_id": "5ba9000000000000",
+          "kind": "server",
+          "status": "unset",
+          "status_message": "",
+          "start_ms": 1768910400000,
+          "end_ms": 1768910400040,
+          "attributes": [],
+          "events": [
+            {
+              "name": "noted",
+              "time_ms": 1768910400001,
+              "attributes": []
+            }
+          ]
+        },
+        {
+          "name": "corpus.rules.erased",
+          "trace_id": "c0de000000000000000000000000000d",
+          "span_id": "5ba900000000000d",
+          "parent_span_id": "5ba9000000000000",
+          "kind": "server",
+          "status": "unset",
+          "status_message": "",
+          "start_ms": 1768474800000,
+          "end_ms": 1768474800040,
+          "attributes": [
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "customer.id",
+              "string": "customer-erased"
+            }
+          ],
+          "events": [
+            {
+              "name": "noted",
+              "time_ms": 1768474800001,
+              "attributes": [
+                {
+                  "key": "organization.identifier",
+                  "string": "corpus-org"
+                },
+                {
+                  "key": "customer.id",
+                  "string": "customer-erased"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "corpus.rules.after_the_erasure",
+          "trace_id": "c0de000000000000000000000000000e",
+          "span_id": "5ba900000000000e",
+          "parent_span_id": "5ba9000000000000",
+          "kind": "server",
+          "status": "unset",
+          "status_message": "",
+          "start_ms": 1768474800001,
+          "end_ms": 1768474800041,
+          "attributes": [
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "customer.id",
+              "string": "customer-erased"
+            }
+          ],
+          "events": [
+            {
+              "name": "noted",
+              "time_ms": 1768474800002,
+              "attributes": [
+                {
+                  "key": "organization.identifier",
+                  "string": "corpus-org"
+                },
+                {
+                  "key": "customer.id",
+                  "string": "customer-erased"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "corpus.rules.another_tenants_customer",
+          "trace_id": "c0de000000000000000000000000000f",
+          "span_id": "5ba900000000000f",
+          "parent_span_id": "5ba9000000000000",
+          "kind": "server",
+          "status": "unset",
+          "status_message": "",
+          "start_ms": 1768474799999,
+          "end_ms": 1768474800039,
+          "attributes": [
+            {
+              "key": "customer.id",
+              "string": "customer-erased"
+            }
+          ],
+          "events": [
+            {
+              "name": "noted",
+              "time_ms": 1768474800000,
+              "attributes": [
+                {
+                  "key": "customer.id",
+                  "string": "customer-erased"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "corpus.rules.three_parts",
+          "trace_id": "c0de0000000000000000000000000010",
+          "span_id": "5ba9000000000010",
+          "parent_span_id": "5ba9000000000000",
+          "kind": "server",
+          "status": "unset",
+          "status_message": "",
+          "start_ms": 1768478100000,
+          "end_ms": 1768478100040,
+          "attributes": [
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            },
+            {
+              "key": "bc.telemetry.log",
+              "string": "corpus.rules.three_parts"
+            }
+          ],
+          "events": [
+            {
+              "name": "noted",
+              "time_ms": 1768478100001,
+              "attributes": [
+                {
+                  "key": "bc.telemetry.schema_version",
+                  "int": 1
+                },
+                {
+                  "key": "bc.telemetry.log",
+                  "string": "corpus.rules.three_parts"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": ".no_module",
+          "trace_id": "c0de0000000000000000000000000011",
+          "span_id": "5ba9000000000011",
+          "parent_span_id": "5ba9000000000000",
+          "kind": "server",
+          "status": "unset",
+          "status_message": "",
+          "start_ms": 1768478160000,
+          "end_ms": 1768478160040,
+          "attributes": [
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            },
+            {
+              "key": "bc.telemetry.log",
+              "string": ".no_module"
+            }
+          ],
+          "events": [
+            {
+              "name": "noted",
+              "time_ms": 1768478160001,
+              "attributes": [
+                {
+                  "key": "bc.telemetry.schema_version",
+                  "int": 1
+                },
+                {
+                  "key": "bc.telemetry.log",
+                  "string": ".no_module"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "no_item.",
+          "trace_id": "c0de0000000000000000000000000012",
+          "span_id": "5ba9000000000012",
+          "parent_span_id": "5ba9000000000000",
+          "kind": "server",
+          "status": "unset",
+          "status_message": "",
+          "start_ms": 1768478220000,
+          "end_ms": 1768478220040,
+          "attributes": [
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            },
+            {
+              "key": "bc.telemetry.log",
+              "string": "no_item."
+            }
+          ],
+          "events": [
+            {
+              "name": "noted",
+              "time_ms": 1768478220001,
+              "attributes": [
+                {
+                  "key": "bc.telemetry.schema_version",
+                  "int": 1
+                },
+                {
+                  "key": "bc.telemetry.log",
+                  "string": "no_item."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "by_hand.declared",
+          "trace_id": "c0de0000000000000000000000000013",
+          "span_id": "5ba9000000000013",
+          "parent_span_id": "5ba9000000000000",
+          "kind": "server",
+          "status": "unset",
+          "status_message": "",
+          "start_ms": 1768478280000,
+          "end_ms": 1768478280040,
+          "attributes": [
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            },
+            {
+              "key": "bc.telemetry.log",
+              "string": "by_hand.declared"
+            }
+          ],
+          "events": [
+            {
+              "name": "noted",
+              "time_ms": 1768478280001,
+              "attributes": [
+                {
+                  "key": "bc.telemetry.schema_version",
+                  "int": 1
+                },
+                {
+                  "key": "bc.telemetry.log",
+                  "string": "by_hand.declared"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "corpus.rules.repeated_key",
+          "trace_id": "c0de0000000000000000000000000014",
+          "span_id": "5ba9000000000014",
+          "parent_span_id": "5ba9000000000000",
+          "kind": "server",
+          "status": "unset",
+          "status_message": "",
+          "start_ms": 1768477920000,
+          "end_ms": 1768477920040,
+          "attributes": [
+            {
+              "key": "note",
+              "string": "first"
+            },
+            {
+              "key": "note",
+              "string": "second"
+            }
+          ],
+          "events": [
+            {
+              "name": "noted",
+              "time_ms": 1768477920001,
+              "attributes": [
+                {
+                  "key": "note",
+                  "string": "first"
+                },
+                {
+                  "key": "note",
+                  "string": "second"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "corpus.rules.awkward_text",
+          "trace_id": "c0de0000000000000000000000000015",
+          "span_id": "5ba9000000000015",
+          "parent_span_id": "5ba9000000000000",
+          "kind": "server",
+          "status": "unset",
+          "status_message": "",
+          "start_ms": 1768477980000,
+          "end_ms": 1768477980040,
+          "attributes": [
+            {
+              "key": "note",
+              "string": "tab\there, newline\nhere, return\rhere, backslash \\ and \\N, quote \" and ' and ünïcödé"
+            },
+            {
+              "key": "empty",
+              "string": ""
+            },
+            {
+              "key": "ratio",
+              "float": 0.25
+            },
+            {
+              "key": "whole",
+              "float": 2
+            },
+            {
+              "key": "not_finite",
+              "not_finite": "nan"
+            },
+            {
+              "key": "count",
+              "int": -7
+            },
+            {
+              "key": "flag",
+              "bool": false
+            }
+          ],
+          "events": [
+            {
+              "name": "noted",
+              "time_ms": 1768477980001,
+              "attributes": [
+                {
+                  "key": "note",
+                  "string": "tab\there, newline\nhere, return\rhere, backslash \\ and \\N, quote \" and ' and ünïcödé"
+                },
+                {
+                  "key": "empty",
+                  "string": ""
+                },
+                {
+                  "key": "ratio",
+                  "float": 0.25
+                },
+                {
+                  "key": "whole",
+                  "float": 2
+                },
+                {
+                  "key": "not_finite",
+                  "not_finite": "nan"
+                },
+                {
+                  "key": "count",
+                  "int": -7
+                },
+                {
+                  "key": "flag",
+                  "bool": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "corpus.rules.text_holds_a_nul",
+          "trace_id": "c0de0000000000000000000000000016",
+          "span_id": "5ba9000000000016",
+          "kind": "internal",
+          "status": "unset",
+          "status_message": "",
+          "start_ms": 1768478040000,
+          "end_ms": 1768478040001,
+          "attributes": [
+            {
+              "key": "note",
+              "nul_separated": [
+                "before",
+                "after"
+              ]
+            }
+          ],
+          "events": []
+        }
+      ],
+      "staged": [
+        "2026-01-15T11:51:00.000Z\tc0de000000000000000000000000000a-5ba900000000000a\t\\N\tcorpus.rules.undeclared\t\\N\tanother-service\t\\N\t\\N\tc0de000000000000000000000000000a\t5ba900000000000a\t{\"route\":\"/health\"}\t2026-01-15T11:51:00.040Z\t5ba9000000000000\tserver\tunset\t\t[{\"name\":\"noted\",\"time\":\"2026-01-15T11:51:00.001Z\",\"attributes\":{\"route\":\"/health\",\"service.name\":\"another-service\"}}]",
+        "2026-01-10T12:00:00.000Z\tc0de000000000000000000000000000b-5ba900000000000b\t\\N\tcorpus.rules.before_every_partition\t\\N\tcorpus\t\\N\t\\N\tc0de000000000000000000000000000b\t5ba900000000000b\t{}\t2026-01-10T12:00:00.040Z\t5ba9000000000000\tserver\tunset\t\t[{\"name\":\"noted\",\"time\":\"2026-01-10T12:00:00.001Z\",\"attributes\":{}}]",
+        "2026-01-20T12:00:00.000Z\tc0de000000000000000000000000000c-5ba900000000000c\t\\N\tcorpus.rules.after_every_partition\t\\N\tcorpus\t\\N\t\\N\tc0de000000000000000000000000000c\t5ba900000000000c\t{}\t2026-01-20T12:00:00.040Z\t5ba9000000000000\tserver\tunset\t\t[{\"name\":\"noted\",\"time\":\"2026-01-20T12:00:00.001Z\",\"attributes\":{}}]",
+        "2026-01-15T11:00:00.000Z\tc0de000000000000000000000000000d-5ba900000000000d\t\\N\tcorpus.rules.erased\t\\N\tcorpus\tcorpus-org\tcustomer-erased\tc0de000000000000000000000000000d\t5ba900000000000d\t{}\t2026-01-15T11:00:00.040Z\t5ba9000000000000\tserver\tunset\t\t[{\"name\":\"noted\",\"time\":\"2026-01-15T11:00:00.001Z\",\"attributes\":{\"customer.id\":\"customer-erased\",\"organization.identifier\":\"corpus-org\"}}]",
+        "2026-01-15T11:00:00.001Z\tc0de000000000000000000000000000e-5ba900000000000e\t\\N\tcorpus.rules.after_the_erasure\t\\N\tcorpus\tcorpus-org\tcustomer-erased\tc0de000000000000000000000000000e\t5ba900000000000e\t{}\t2026-01-15T11:00:00.041Z\t5ba9000000000000\tserver\tunset\t\t[{\"name\":\"noted\",\"time\":\"2026-01-15T11:00:00.002Z\",\"attributes\":{\"customer.id\":\"customer-erased\",\"organization.identifier\":\"corpus-org\"}}]",
+        "2026-01-15T10:59:59.999Z\tc0de000000000000000000000000000f-5ba900000000000f\t\\N\tcorpus.rules.another_tenants_customer\t\\N\tcorpus\t\\N\tcustomer-erased\tc0de000000000000000000000000000f\t5ba900000000000f\t{}\t2026-01-15T11:00:00.039Z\t5ba9000000000000\tserver\tunset\t\t[{\"name\":\"noted\",\"time\":\"2026-01-15T11:00:00.000Z\",\"attributes\":{\"customer.id\":\"customer-erased\"}}]",
+        "2026-01-15T11:55:00.000Z\tc0de0000000000000000000000000010-5ba9000000000010\t\\N\tcorpus.rules.three_parts\t\\N\tcorpus\t\\N\t\\N\tc0de0000000000000000000000000010\t5ba9000000000010\t{\"bc.telemetry.log\":\"corpus.rules.three_parts\",\"bc.telemetry.schema_version\":1}\t2026-01-15T11:55:00.040Z\t5ba9000000000000\tserver\tunset\t\t[{\"name\":\"noted\",\"time\":\"2026-01-15T11:55:00.001Z\",\"attributes\":{\"bc.telemetry.log\":\"corpus.rules.three_parts\",\"bc.telemetry.schema_version\":1}}]",
+        "2026-01-15T11:56:00.000Z\tc0de0000000000000000000000000011-5ba9000000000011\t\\N\t.no_module\t\\N\tcorpus\t\\N\t\\N\tc0de0000000000000000000000000011\t5ba9000000000011\t{\"bc.telemetry.log\":\".no_module\",\"bc.telemetry.schema_version\":1}\t2026-01-15T11:56:00.040Z\t5ba9000000000000\tserver\tunset\t\t[{\"name\":\"noted\",\"time\":\"2026-01-15T11:56:00.001Z\",\"attributes\":{\"bc.telemetry.log\":\".no_module\",\"bc.telemetry.schema_version\":1}}]",
+        "2026-01-15T11:57:00.000Z\tc0de0000000000000000000000000012-5ba9000000000012\t\\N\tno_item.\t\\N\tcorpus\t\\N\t\\N\tc0de0000000000000000000000000012\t5ba9000000000012\t{\"bc.telemetry.log\":\"no_item.\",\"bc.telemetry.schema_version\":1}\t2026-01-15T11:57:00.040Z\t5ba9000000000000\tserver\tunset\t\t[{\"name\":\"noted\",\"time\":\"2026-01-15T11:57:00.001Z\",\"attributes\":{\"bc.telemetry.log\":\"no_item.\",\"bc.telemetry.schema_version\":1}}]",
+        "2026-01-15T11:58:00.000Z\tc0de0000000000000000000000000013-5ba9000000000013\tby_hand\tdeclared\t1\tcorpus\t\\N\t\\N\tc0de0000000000000000000000000013\t5ba9000000000013\t{\"bc.telemetry.log\":\"by_hand.declared\"}\t2026-01-15T11:58:00.040Z\t5ba9000000000000\tserver\tunset\t\t[{\"name\":\"noted\",\"time\":\"2026-01-15T11:58:00.001Z\",\"attributes\":{\"bc.telemetry.log\":\"by_hand.declared\",\"bc.telemetry.schema_version\":1}}]",
+        "2026-01-15T11:52:00.000Z\tc0de0000000000000000000000000014-5ba9000000000014\t\\N\tcorpus.rules.repeated_key\t\\N\tcorpus\t\\N\t\\N\tc0de0000000000000000000000000014\t5ba9000000000014\t{\"note\":\"second\"}\t2026-01-15T11:52:00.040Z\t5ba9000000000000\tserver\tunset\t\t[{\"name\":\"noted\",\"time\":\"2026-01-15T11:52:00.001Z\",\"attributes\":{\"note\":\"second\"}}]",
+        "2026-01-15T11:53:00.000Z\tc0de0000000000000000000000000015-5ba9000000000015\t\\N\tcorpus.rules.awkward_text\t\\N\tcorpus\t\\N\t\\N\tc0de0000000000000000000000000015\t5ba9000000000015\t{\"count\":-7,\"empty\":\"\",\"flag\":false,\"not_finite\":null,\"note\":\"tab\\\\there, newline\\\\nhere, return\\\\rhere, backslash \\\\\\\\ and \\\\\\\\N, quote \\\\\" and ' and ünïcödé\",\"ratio\":0.25,\"whole\":2}\t2026-01-15T11:53:00.040Z\t5ba9000000000000\tserver\tunset\t\t[{\"name\":\"noted\",\"time\":\"2026-01-15T11:53:00.001Z\",\"attributes\":{\"count\":-7,\"empty\":\"\",\"flag\":false,\"not_finite\":null,\"note\":\"tab\\\\there, newline\\\\nhere, return\\\\rhere, backslash \\\\\\\\ and \\\\\\\\N, quote \\\\\" and ' and ünïcödé\",\"ratio\":0.25,\"whole\":2}}]"
+      ],
+      "writer": {
+        "refused": 1,
+        "collisions": 2
+      },
+      "counts": {
+        "inserted": 9,
+        "out_of_range": 2,
+        "erased": 1,
+        "duplicate": 0
+      }
+    },
+    {
+      "name": "the rules, for metrics",
+      "kind": "metrics",
+      "records": [
+        {
+          "name": "corpus.rules.undeclared",
+          "kind": "gauge",
+          "value_float": 0.5,
+          "time_ms": 1768477860000,
+          "attributes": [
+            {
+              "key": "service.name",
+              "string": "another-service"
+            },
+            {
+              "key": "route",
+              "string": "/health"
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 34,
+          "within": {
+            "trace_id": "c0de00000000000000000000000000ff",
+            "span_id": "5ba90000000000ff"
+          }
+        },
+        {
+          "name": "corpus.rules.before_every_partition",
+          "kind": "gauge",
+          "value_float": 0.5,
+          "time_ms": 1768046400000,
+          "attributes": [],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 35,
+          "within": {
+            "trace_id": "c0de00000000000000000000000000ff",
+            "span_id": "5ba90000000000ff"
+          }
+        },
+        {
+          "name": "corpus.rules.after_every_partition",
+          "kind": "gauge",
+          "value_float": 0.5,
+          "time_ms": 1768910400000,
+          "attributes": [],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 36,
+          "within": {
+            "trace_id": "c0de00000000000000000000000000ff",
+            "span_id": "5ba90000000000ff"
+          }
+        },
+        {
+          "name": "corpus.rules.erased",
+          "kind": "gauge",
+          "value_float": 0.5,
+          "time_ms": 1768474800000,
+          "attributes": [
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "customer.id",
+              "string": "customer-erased"
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 37,
+          "within": {
+            "trace_id": "c0de00000000000000000000000000ff",
+            "span_id": "5ba90000000000ff"
+          }
+        },
+        {
+          "name": "corpus.rules.after_the_erasure",
+          "kind": "gauge",
+          "value_float": 0.5,
+          "time_ms": 1768474800001,
+          "attributes": [
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "customer.id",
+              "string": "customer-erased"
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 38,
+          "within": {
+            "trace_id": "c0de00000000000000000000000000ff",
+            "span_id": "5ba90000000000ff"
+          }
+        },
+        {
+          "name": "corpus.rules.another_tenants_customer",
+          "kind": "gauge",
+          "value_float": 0.5,
+          "time_ms": 1768474799999,
+          "attributes": [
+            {
+              "key": "customer.id",
+              "string": "customer-erased"
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 39,
+          "within": {
+            "trace_id": "c0de00000000000000000000000000ff",
+            "span_id": "5ba90000000000ff"
+          }
+        },
+        {
+          "name": "corpus.rules.three_parts",
+          "kind": "gauge",
+          "value_float": 0.5,
+          "time_ms": 1768478100000,
+          "attributes": [
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            },
+            {
+              "key": "bc.telemetry.log",
+              "string": "corpus.rules.three_parts"
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 40,
+          "within": {
+            "trace_id": "c0de00000000000000000000000000ff",
+            "span_id": "5ba90000000000ff"
+          }
+        },
+        {
+          "name": ".no_module",
+          "kind": "gauge",
+          "value_float": 0.5,
+          "time_ms": 1768478160000,
+          "attributes": [
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            },
+            {
+              "key": "bc.telemetry.log",
+              "string": ".no_module"
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 41,
+          "within": {
+            "trace_id": "c0de00000000000000000000000000ff",
+            "span_id": "5ba90000000000ff"
+          }
+        },
+        {
+          "name": "no_item.",
+          "kind": "gauge",
+          "value_float": 0.5,
+          "time_ms": 1768478220000,
+          "attributes": [
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            },
+            {
+              "key": "bc.telemetry.log",
+              "string": "no_item."
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 42,
+          "within": {
+            "trace_id": "c0de00000000000000000000000000ff",
+            "span_id": "5ba90000000000ff"
+          }
+        },
+        {
+          "name": "by_hand.declared",
+          "kind": "gauge",
+          "value_float": 0.5,
+          "time_ms": 1768478280000,
+          "attributes": [
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            },
+            {
+              "key": "bc.telemetry.log",
+              "string": "by_hand.declared"
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 43,
+          "within": {
+            "trace_id": "c0de00000000000000000000000000ff",
+            "span_id": "5ba90000000000ff"
+          }
+        },
+        {
+          "name": "corpus.rules.repeated_key",
+          "kind": "gauge",
+          "value_float": 0.5,
+          "time_ms": 1768477920000,
+          "attributes": [
+            {
+              "key": "note",
+              "string": "first"
+            },
+            {
+              "key": "note",
+              "string": "second"
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 44,
+          "within": {
+            "trace_id": "c0de00000000000000000000000000ff",
+            "span_id": "5ba90000000000ff"
+          }
+        },
+        {
+          "name": "corpus.rules.awkward_text",
+          "kind": "gauge",
+          "value_float": 0.5,
+          "time_ms": 1768477980000,
+          "attributes": [
+            {
+              "key": "note",
+              "string": "tab\there, newline\nhere, return\rhere, backslash \\ and \\N, quote \" and ' and ünïcödé"
+            },
+            {
+              "key": "empty",
+              "string": ""
+            },
+            {
+              "key": "ratio",
+              "float": 0.25
+            },
+            {
+              "key": "whole",
+              "float": 2
+            },
+            {
+              "key": "not_finite",
+              "not_finite": "nan"
+            },
+            {
+              "key": "count",
+              "int": -7
+            },
+            {
+              "key": "flag",
+              "bool": false
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 45,
+          "within": {
+            "trace_id": "c0de00000000000000000000000000ff",
+            "span_id": "5ba90000000000ff"
+          }
+        },
+        {
+          "name": "corpus.rules.text_holds_a_nul",
+          "kind": "counter",
+          "value_int": 1,
+          "time_ms": 1768478040000,
+          "attributes": [
+            {
+              "key": "note",
+              "nul_separated": [
+                "before",
+                "after"
+              ]
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 46
+        },
+        {
+          "name": "corpus.rules.value_is_a_boolean",
+          "kind": "gauge",
+          "value_bool": true,
+          "time_ms": 1768478040000,
+          "attributes": [],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 47
+        },
+        {
+          "name": "corpus.rules.value_is_text",
+          "kind": "gauge",
+          "value_string": "not a number",
+          "time_ms": 1768478040000,
+          "attributes": [],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 48
+        },
+        {
+          "name": "corpus.rules.value_is_not_finite",
+          "kind": "gauge",
+          "value_not_finite": "infinity",
+          "time_ms": 1768478040000,
+          "attributes": [],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 49
+        },
+        {
+          "name": "corpus.rules.no_identity",
+          "kind": "counter",
+          "value_int": 1,
+          "time_ms": 1768478040000,
+          "attributes": [],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 0
+        }
+      ],
+      "staged": [
+        "2026-01-15T11:51:00.000Z\t0b5e0000000000000000000000000001-34\t\\N\tcorpus.rules.undeclared\t\\N\tanother-service\t\\N\t\\N\tc0de00000000000000000000000000ff\t5ba90000000000ff\t{\"route\":\"/health\"}\tgauge\t0.5",
+        "2026-01-10T12:00:00.000Z\t0b5e0000000000000000000000000001-35\t\\N\tcorpus.rules.before_every_partition\t\\N\tcorpus\t\\N\t\\N\tc0de00000000000000000000000000ff\t5ba90000000000ff\t{}\tgauge\t0.5",
+        "2026-01-20T12:00:00.000Z\t0b5e0000000000000000000000000001-36\t\\N\tcorpus.rules.after_every_partition\t\\N\tcorpus\t\\N\t\\N\tc0de00000000000000000000000000ff\t5ba90000000000ff\t{}\tgauge\t0.5",
+        "2026-01-15T11:00:00.000Z\t0b5e0000000000000000000000000001-37\t\\N\tcorpus.rules.erased\t\\N\tcorpus\tcorpus-org\tcustomer-erased\tc0de00000000000000000000000000ff\t5ba90000000000ff\t{}\tgauge\t0.5",
+        "2026-01-15T11:00:00.001Z\t0b5e0000000000000000000000000001-38\t\\N\tcorpus.rules.after_the_erasure\t\\N\tcorpus\tcorpus-org\tcustomer-erased\tc0de00000000000000000000000000ff\t5ba90000000000ff\t{}\tgauge\t0.5",
+        "2026-01-15T10:59:59.999Z\t0b5e0000000000000000000000000001-39\t\\N\tcorpus.rules.another_tenants_customer\t\\N\tcorpus\t\\N\tcustomer-erased\tc0de00000000000000000000000000ff\t5ba90000000000ff\t{}\tgauge\t0.5",
+        "2026-01-15T11:55:00.000Z\t0b5e0000000000000000000000000001-40\t\\N\tcorpus.rules.three_parts\t\\N\tcorpus\t\\N\t\\N\tc0de00000000000000000000000000ff\t5ba90000000000ff\t{\"bc.telemetry.log\":\"corpus.rules.three_parts\",\"bc.telemetry.schema_version\":1}\tgauge\t0.5",
+        "2026-01-15T11:56:00.000Z\t0b5e0000000000000000000000000001-41\t\\N\t.no_module\t\\N\tcorpus\t\\N\t\\N\tc0de00000000000000000000000000ff\t5ba90000000000ff\t{\"bc.telemetry.log\":\".no_module\",\"bc.telemetry.schema_version\":1}\tgauge\t0.5",
+        "2026-01-15T11:57:00.000Z\t0b5e0000000000000000000000000001-42\t\\N\tno_item.\t\\N\tcorpus\t\\N\t\\N\tc0de00000000000000000000000000ff\t5ba90000000000ff\t{\"bc.telemetry.log\":\"no_item.\",\"bc.telemetry.schema_version\":1}\tgauge\t0.5",
+        "2026-01-15T11:58:00.000Z\t0b5e0000000000000000000000000001-43\tby_hand\tdeclared\t1\tcorpus\t\\N\t\\N\tc0de00000000000000000000000000ff\t5ba90000000000ff\t{\"bc.telemetry.log\":\"by_hand.declared\"}\tgauge\t0.5",
+        "2026-01-15T11:52:00.000Z\t0b5e0000000000000000000000000001-44\t\\N\tcorpus.rules.repeated_key\t\\N\tcorpus\t\\N\t\\N\tc0de00000000000000000000000000ff\t5ba90000000000ff\t{\"note\":\"second\"}\tgauge\t0.5",
+        "2026-01-15T11:53:00.000Z\t0b5e0000000000000000000000000001-45\t\\N\tcorpus.rules.awkward_text\t\\N\tcorpus\t\\N\t\\N\tc0de00000000000000000000000000ff\t5ba90000000000ff\t{\"count\":-7,\"empty\":\"\",\"flag\":false,\"not_finite\":null,\"note\":\"tab\\\\there, newline\\\\nhere, return\\\\rhere, backslash \\\\\\\\ and \\\\\\\\N, quote \\\\\" and ' and ünïcödé\",\"ratio\":0.25,\"whole\":2}\tgauge\t0.5",
+        "2026-01-15T11:54:00.000Z\t0b5e0000000000000000000000000001-47\t\\N\tcorpus.rules.value_is_a_boolean\t\\N\tcorpus\t\\N\t\\N\t\\N\t\\N\t{}\tgauge\t1"
+      ],
+      "writer": {
+        "refused": 4,
+        "collisions": 1
+      },
+      "counts": {
+        "inserted": 10,
+        "out_of_range": 2,
+        "erased": 1,
+        "duplicate": 0
+      }
+    },
+    {
+      "name": "the rules, for logs",
+      "kind": "logs",
+      "records": [
+        {
+          "time_ms": 1768477860000,
+          "severity": "info",
+          "body": "corpus.rules.undeclared: tab\there, newline\nhere, return\rhere, backslash \\ and \\N, quote \" and ' and ünïcödé",
+          "attributes": [
+            {
+              "key": "service.name",
+              "string": "another-service"
+            },
+            {
+              "key": "route",
+              "string": "/health"
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 50,
+          "within": {
+            "trace_id": "c0de00000000000000000000000000ff",
+            "span_id": "5ba90000000000ff"
+          }
+        },
+        {
+          "time_ms": 1768046400000,
+          "severity": "info",
+          "body": "corpus.rules.before_every_partition: tab\there, newline\nhere, return\rhere, backslash \\ and \\N, quote \" and ' and ünïcödé",
+          "attributes": [],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 51,
+          "within": {
+            "trace_id": "c0de00000000000000000000000000ff",
+            "span_id": "5ba90000000000ff"
+          }
+        },
+        {
+          "time_ms": 1768910400000,
+          "severity": "info",
+          "body": "corpus.rules.after_every_partition: tab\there, newline\nhere, return\rhere, backslash \\ and \\N, quote \" and ' and ünïcödé",
+          "attributes": [],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 52,
+          "within": {
+            "trace_id": "c0de00000000000000000000000000ff",
+            "span_id": "5ba90000000000ff"
+          }
+        },
+        {
+          "time_ms": 1768474800000,
+          "severity": "info",
+          "body": "corpus.rules.erased: tab\there, newline\nhere, return\rhere, backslash \\ and \\N, quote \" and ' and ünïcödé",
+          "attributes": [
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "customer.id",
+              "string": "customer-erased"
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 53,
+          "within": {
+            "trace_id": "c0de00000000000000000000000000ff",
+            "span_id": "5ba90000000000ff"
+          }
+        },
+        {
+          "time_ms": 1768474800001,
+          "severity": "info",
+          "body": "corpus.rules.after_the_erasure: tab\there, newline\nhere, return\rhere, backslash \\ and \\N, quote \" and ' and ünïcödé",
+          "attributes": [
+            {
+              "key": "organization.identifier",
+              "string": "corpus-org"
+            },
+            {
+              "key": "customer.id",
+              "string": "customer-erased"
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 54,
+          "within": {
+            "trace_id": "c0de00000000000000000000000000ff",
+            "span_id": "5ba90000000000ff"
+          }
+        },
+        {
+          "time_ms": 1768474799999,
+          "severity": "info",
+          "body": "corpus.rules.another_tenants_customer: tab\there, newline\nhere, return\rhere, backslash \\ and \\N, quote \" and ' and ünïcödé",
+          "attributes": [
+            {
+              "key": "customer.id",
+              "string": "customer-erased"
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 55,
+          "within": {
+            "trace_id": "c0de00000000000000000000000000ff",
+            "span_id": "5ba90000000000ff"
+          }
+        },
+        {
+          "time_ms": 1768478100000,
+          "severity": "info",
+          "body": "corpus.rules.three_parts: tab\there, newline\nhere, return\rhere, backslash \\ and \\N, quote \" and ' and ünïcödé",
+          "attributes": [
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            },
+            {
+              "key": "bc.telemetry.log",
+              "string": "corpus.rules.three_parts"
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 56,
+          "within": {
+            "trace_id": "c0de00000000000000000000000000ff",
+            "span_id": "5ba90000000000ff"
+          }
+        },
+        {
+          "time_ms": 1768478160000,
+          "severity": "info",
+          "body": ".no_module: tab\there, newline\nhere, return\rhere, backslash \\ and \\N, quote \" and ' and ünïcödé",
+          "attributes": [
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            },
+            {
+              "key": "bc.telemetry.log",
+              "string": ".no_module"
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 57,
+          "within": {
+            "trace_id": "c0de00000000000000000000000000ff",
+            "span_id": "5ba90000000000ff"
+          }
+        },
+        {
+          "time_ms": 1768478220000,
+          "severity": "info",
+          "body": "no_item.: tab\there, newline\nhere, return\rhere, backslash \\ and \\N, quote \" and ' and ünïcödé",
+          "attributes": [
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            },
+            {
+              "key": "bc.telemetry.log",
+              "string": "no_item."
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 58,
+          "within": {
+            "trace_id": "c0de00000000000000000000000000ff",
+            "span_id": "5ba90000000000ff"
+          }
+        },
+        {
+          "time_ms": 1768478280000,
+          "severity": "info",
+          "body": "by_hand.declared: tab\there, newline\nhere, return\rhere, backslash \\ and \\N, quote \" and ' and ünïcödé",
+          "attributes": [
+            {
+              "key": "bc.telemetry.schema_version",
+              "int": 1
+            },
+            {
+              "key": "bc.telemetry.log",
+              "string": "by_hand.declared"
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 59,
+          "within": {
+            "trace_id": "c0de00000000000000000000000000ff",
+            "span_id": "5ba90000000000ff"
+          }
+        },
+        {
+          "time_ms": 1768477920000,
+          "severity": "info",
+          "body": "corpus.rules.repeated_key: tab\there, newline\nhere, return\rhere, backslash \\ and \\N, quote \" and ' and ünïcödé",
+          "attributes": [
+            {
+              "key": "note",
+              "string": "first"
+            },
+            {
+              "key": "note",
+              "string": "second"
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 60,
+          "within": {
+            "trace_id": "c0de00000000000000000000000000ff",
+            "span_id": "5ba90000000000ff"
+          }
+        },
+        {
+          "time_ms": 1768477980000,
+          "severity": "info",
+          "body": "corpus.rules.awkward_text: tab\there, newline\nhere, return\rhere, backslash \\ and \\N, quote \" and ' and ünïcödé",
+          "attributes": [
+            {
+              "key": "note",
+              "string": "tab\there, newline\nhere, return\rhere, backslash \\ and \\N, quote \" and ' and ünïcödé"
+            },
+            {
+              "key": "empty",
+              "string": ""
+            },
+            {
+              "key": "ratio",
+              "float": 0.25
+            },
+            {
+              "key": "whole",
+              "float": 2
+            },
+            {
+              "key": "not_finite",
+              "not_finite": "nan"
+            },
+            {
+              "key": "count",
+              "int": -7
+            },
+            {
+              "key": "flag",
+              "bool": false
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 61,
+          "within": {
+            "trace_id": "c0de00000000000000000000000000ff",
+            "span_id": "5ba90000000000ff"
+          }
+        },
+        {
+          "time_ms": 1768478040000,
+          "severity": "info",
+          "body": "corpus.rules.no_identity",
+          "attributes": [],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 0
+        },
+        {
+          "time_ms": 1768478040000,
+          "severity": "info",
+          "body": "corpus.rules.text_holds_a_nul",
+          "attributes": [
+            {
+              "key": "note",
+              "nul_separated": [
+                "before",
+                "after"
+              ]
+            }
+          ],
+          "producer": "0b5e0000000000000000000000000001",
+          "sequence": 62
+        }
+      ],
+      "staged": [
+        "2026-01-15T11:51:00.000Z\t0b5e0000000000000000000000000001-50\t\\N\t\t\\N\tanother-service\t\\N\t\\N\tc0de00000000000000000000000000ff\t5ba90000000000ff\t{\"route\":\"/health\"}\tinfo\tcorpus.rules.undeclared: tab\\there, newline\\nhere, return\\rhere, backslash \\\\ and \\\\N, quote \" and ' and ünïcödé",
+        "2026-01-10T12:00:00.000Z\t0b5e0000000000000000000000000001-51\t\\N\t\t\\N\tcorpus\t\\N\t\\N\tc0de00000000000000000000000000ff\t5ba90000000000ff\t{}\tinfo\tcorpus.rules.before_every_partition: tab\\there, newline\\nhere, return\\rhere, backslash \\\\ and \\\\N, quote \" and ' and ünïcödé",
+        "2026-01-20T12:00:00.000Z\t0b5e0000000000000000000000000001-52\t\\N\t\t\\N\tcorpus\t\\N\t\\N\tc0de00000000000000000000000000ff\t5ba90000000000ff\t{}\tinfo\tcorpus.rules.after_every_partition: tab\\there, newline\\nhere, return\\rhere, backslash \\\\ and \\\\N, quote \" and ' and ünïcödé",
+        "2026-01-15T11:00:00.000Z\t0b5e0000000000000000000000000001-53\t\\N\t\t\\N\tcorpus\tcorpus-org\tcustomer-erased\tc0de00000000000000000000000000ff\t5ba90000000000ff\t{}\tinfo\tcorpus.rules.erased: tab\\there, newline\\nhere, return\\rhere, backslash \\\\ and \\\\N, quote \" and ' and ünïcödé",
+        "2026-01-15T11:00:00.001Z\t0b5e0000000000000000000000000001-54\t\\N\t\t\\N\tcorpus\tcorpus-org\tcustomer-erased\tc0de00000000000000000000000000ff\t5ba90000000000ff\t{}\tinfo\tcorpus.rules.after_the_erasure: tab\\there, newline\\nhere, return\\rhere, backslash \\\\ and \\\\N, quote \" and ' and ünïcödé",
+        "2026-01-15T10:59:59.999Z\t0b5e0000000000000000000000000001-55\t\\N\t\t\\N\tcorpus\t\\N\tcustomer-erased\tc0de00000000000000000000000000ff\t5ba90000000000ff\t{}\tinfo\tcorpus.rules.another_tenants_customer: tab\\there, newline\\nhere, return\\rhere, backslash \\\\ and \\\\N, quote \" and ' and ünïcödé",
+        "2026-01-15T11:55:00.000Z\t0b5e0000000000000000000000000001-56\t\\N\tcorpus.rules.three_parts\t\\N\tcorpus\t\\N\t\\N\tc0de00000000000000000000000000ff\t5ba90000000000ff\t{\"bc.telemetry.log\":\"corpus.rules.three_parts\",\"bc.telemetry.schema_version\":1}\tinfo\tcorpus.rules.three_parts: tab\\there, newline\\nhere, return\\rhere, backslash \\\\ and \\\\N, quote \" and ' and ünïcödé",
+        "2026-01-15T11:56:00.000Z\t0b5e0000000000000000000000000001-57\t\\N\t.no_module\t\\N\tcorpus\t\\N\t\\N\tc0de00000000000000000000000000ff\t5ba90000000000ff\t{\"bc.telemetry.log\":\".no_module\",\"bc.telemetry.schema_version\":1}\tinfo\t.no_module: tab\\there, newline\\nhere, return\\rhere, backslash \\\\ and \\\\N, quote \" and ' and ünïcödé",
+        "2026-01-15T11:57:00.000Z\t0b5e0000000000000000000000000001-58\t\\N\tno_item.\t\\N\tcorpus\t\\N\t\\N\tc0de00000000000000000000000000ff\t5ba90000000000ff\t{\"bc.telemetry.log\":\"no_item.\",\"bc.telemetry.schema_version\":1}\tinfo\tno_item.: tab\\there, newline\\nhere, return\\rhere, backslash \\\\ and \\\\N, quote \" and ' and ünïcödé",
+        "2026-01-15T11:58:00.000Z\t0b5e0000000000000000000000000001-59\tby_hand\tdeclared\t1\tcorpus\t\\N\t\\N\tc0de00000000000000000000000000ff\t5ba90000000000ff\t{}\tinfo\tby_hand.declared: tab\\there, newline\\nhere, return\\rhere, backslash \\\\ and \\\\N, quote \" and ' and ünïcödé",
+        "2026-01-15T11:52:00.000Z\t0b5e0000000000000000000000000001-60\t\\N\t\t\\N\tcorpus\t\\N\t\\N\tc0de00000000000000000000000000ff\t5ba90000000000ff\t{\"note\":\"second\"}\tinfo\tcorpus.rules.repeated_key: tab\\there, newline\\nhere, return\\rhere, backslash \\\\ and \\\\N, quote \" and ' and ünïcödé",
+        "2026-01-15T11:53:00.000Z\t0b5e0000000000000000000000000001-61\t\\N\t\t\\N\tcorpus\t\\N\t\\N\tc0de00000000000000000000000000ff\t5ba90000000000ff\t{\"count\":-7,\"empty\":\"\",\"flag\":false,\"not_finite\":null,\"note\":\"tab\\\\there, newline\\\\nhere, return\\\\rhere, backslash \\\\\\\\ and \\\\\\\\N, quote \\\\\" and ' and ünïcödé\",\"ratio\":0.25,\"whole\":2}\tinfo\tcorpus.rules.awkward_text: tab\\there, newline\\nhere, return\\rhere, backslash \\\\ and \\\\N, quote \" and ' and ünïcödé"
+      ],
+      "writer": {
+        "refused": 2,
+        "collisions": 1
+      },
+      "counts": {
+        "inserted": 9,
+        "out_of_range": 2,
+        "erased": 1,
+        "duplicate": 0
+      }
+    }
+  ],
+  "checks": [
+    {
+      "name": "telemetry.spans",
+      "query": "SELECT line FROM (SELECT concat_ws(E'\\x1f', (extract(epoch FROM time) * 1000)::bigint, record_id, coalesce(module, '\\N'), name, coalesce(schema_version::text, '\\N'), service_name, coalesce(organization, '\\N'), coalesce(customer, '\\N'), coalesce(trace_id, '\\N'), coalesce(span_id, '\\N'), (SELECT coalesce(string_agg(entry.key || '=' || jsonb_typeof(entry.value) || ':' || CASE jsonb_typeof(entry.value) WHEN 'number' THEN ((entry.value #>> '{}')::double precision)::text WHEN 'null' THEN '' ELSE entry.value #>> '{}' END, E'\\x1e' ORDER BY entry.key COLLATE \"C\"), '') FROM jsonb_each(attributes) AS entry), (extract(epoch FROM end_time) * 1000)::bigint, coalesce(parent_span_id, '\\N'), kind, status, status_message, (SELECT coalesce(string_agg((listed.event->>'name') || '@' || (extract(epoch FROM (listed.event->>'time')::timestamptz) * 1000)::bigint || '{' || (SELECT coalesce(string_agg(entry.key || '=' || jsonb_typeof(entry.value) || ':' || CASE jsonb_typeof(entry.value) WHEN 'number' THEN ((entry.value #>> '{}')::double precision)::text WHEN 'null' THEN '' ELSE entry.value #>> '{}' END, E'\\x1e' ORDER BY entry.key COLLATE \"C\"), '') FROM jsonb_each(listed.event->'attributes') AS entry) || '}', E'\\x1d' ORDER BY listed.position), '') FROM jsonb_array_elements(events) WITH ORDINALITY AS listed(event, position))) AS line FROM telemetry.spans) AS lines ORDER BY line COLLATE \"C\"",
+      "rows": [
+        "1768474799999\u001fc0de000000000000000000000000000f-5ba900000000000f\u001f\\N\u001fcorpus.rules.another_tenants_customer\u001f\\N\u001fcorpus\u001f\\N\u001fcustomer-erased\u001fc0de000000000000000000000000000f\u001f5ba900000000000f\u001f\u001f1768474800039\u001f5ba9000000000000\u001fserver\u001funset\u001f\u001fnoted@1768474800000{customer.id=string:customer-erased}",
+        "1768474800001\u001fc0de000000000000000000000000000e-5ba900000000000e\u001f\\N\u001fcorpus.rules.after_the_erasure\u001f\\N\u001fcorpus\u001fcorpus-org\u001fcustomer-erased\u001fc0de000000000000000000000000000e\u001f5ba900000000000e\u001f\u001f1768474800041\u001f5ba9000000000000\u001fserver\u001funset\u001f\u001fnoted@1768474800002{customer.id=string:customer-erased\u001eorganization.identifier=string:corpus-org}",
+        "1768477200000\u001fc0de0000000000000000000000000001-5ba9000000000001\u001fpayments\u001fauthorize\u001f1\u001fcorpus\u001fcorpus-org\u001fcustomer-kept\u001fc0de0000000000000000000000000001\u001f5ba9000000000001\u001fprocessor=string:processor-0\u001f1768477200125\u001f\\N\u001fclient\u001fok\u001f\u001fprocessor_called@1768477200005{}",
+        "1768477200000\u001fc0de0000000000000000000000000004-5ba9000000000004\u001fstore_server\u001fcheckout\u001f1\u001fcorpus\u001fcorpus-org\u001fcustomer-kept\u001fc0de0000000000000000000000000004\u001f5ba9000000000004\u001fcart_id=string:cart_id-0\u001eitem_count=number:1\u001f1768477200125\u001f\\N\u001fserver\u001fok\u001f\u001finventory_reserved@1768477200005{}\u001dpayment_authorized@1768477200005{}",
+        "1768477200000\u001fc0de0000000000000000000000000007-5ba9000000000007\u001fstore_server\u001frefund\u001f1\u001fcorpus\u001fcorpus-org\u001fcustomer-kept\u001fc0de0000000000000000000000000007\u001f5ba9000000000007\u001famount=number:12.5\u001eorder_id=string:digest-0\u001epartial=boolean:true\u001esettle_time=number:250\u001f1768477200125\u001f\\N\u001finternal\u001fok\u001f\u001f",
+        "1768477500000\u001fc0de0000000000000000000000000002-5ba9000000000002\u001fpayments\u001fauthorize\u001f1\u001fcorpus\u001fcorpus-org\u001f\\N\u001fc0de0000000000000000000000000002\u001f5ba9000000000002\u001fprocessor=string:processor-1\u001f1768477500125\u001f\\N\u001fclient\u001funset\u001f\u001fprocessor_called@1768477500005{}",
+        "1768477500000\u001fc0de0000000000000000000000000005-5ba9000000000005\u001fstore_server\u001fcheckout\u001f1\u001fcorpus\u001fcorpus-org\u001f\\N\u001fc0de0000000000000000000000000005\u001f5ba9000000000005\u001fcart_id=string:cart_id-1\u001eitem_count=number:2\u001f1768477500125\u001f\\N\u001fserver\u001funset\u001f\u001finventory_reserved@1768477500005{}\u001dpayment_authorized@1768477500005{}",
+        "1768477500000\u001fc0de0000000000000000000000000008-5ba9000000000008\u001fstore_server\u001frefund\u001f1\u001fcorpus\u001fcorpus-org\u001f\\N\u001fc0de0000000000000000000000000008\u001f5ba9000000000008\u001famount=number:13.5\u001eorder_id=string:digest-1\u001epartial=boolean:false\u001esettle_time=number:500\u001f1768477500125\u001f\\N\u001finternal\u001funset\u001f\u001f",
+        "1768477800000\u001fc0de0000000000000000000000000003-5ba9000000000003\u001fpayments\u001fauthorize\u001f1\u001fcorpus\u001fcorpus-org\u001f\\N\u001fc0de0000000000000000000000000003\u001f5ba9000000000003\u001fprocessor=string:processor-0\u001f1768477800125\u001f\\N\u001fclient\u001ferror\u001ffailed\u001fprocessor_called@1768477800005{}",
+        "1768477800000\u001fc0de0000000000000000000000000006-5ba9000000000006\u001fstore_server\u001fcheckout\u001f1\u001fcorpus\u001fcorpus-org\u001f\\N\u001fc0de0000000000000000000000000006\u001f5ba9000000000006\u001fcart_id=string:cart_id-0\u001eitem_count=number:3\u001f1768477800125\u001f\\N\u001fserver\u001ferror\u001ffailed\u001finventory_reserved@1768477800005{}\u001dpayment_authorized@1768477800005{}",
+        "1768477800000\u001fc0de0000000000000000000000000009-5ba9000000000009\u001fstore_server\u001frefund\u001f1\u001fcorpus\u001fcorpus-org\u001f\\N\u001fc0de0000000000000000000000000009\u001f5ba9000000000009\u001famount=number:14.5\u001eorder_id=string:digest-0\u001epartial=boolean:true\u001esettle_time=number:750\u001f1768477800125\u001f\\N\u001finternal\u001ferror\u001ffailed\u001f",
+        "1768477860000\u001fc0de000000000000000000000000000a-5ba900000000000a\u001f\\N\u001fcorpus.rules.undeclared\u001f\\N\u001fanother-service\u001f\\N\u001f\\N\u001fc0de000000000000000000000000000a\u001f5ba900000000000a\u001froute=string:/health\u001f1768477860040\u001f5ba9000000000000\u001fserver\u001funset\u001f\u001fnoted@1768477860001{route=string:/health\u001eservice.name=string:another-service}",
+        "1768477920000\u001fc0de0000000000000000000000000014-5ba9000000000014\u001f\\N\u001fcorpus.rules.repeated_key\u001f\\N\u001fcorpus\u001f\\N\u001f\\N\u001fc0de0000000000000000000000000014\u001f5ba9000000000014\u001fnote=string:second\u001f1768477920040\u001f5ba9000000000000\u001fserver\u001funset\u001f\u001fnoted@1768477920001{note=string:second}",
+        "1768477980000\u001fc0de0000000000000000000000000015-5ba9000000000015\u001f\\N\u001fcorpus.rules.awkward_text\u001f\\N\u001fcorpus\u001f\\N\u001f\\N\u001fc0de0000000000000000000000000015\u001f5ba9000000000015\u001fcount=number:-7\u001eempty=string:\u001eflag=boolean:false\u001enot_finite=null:\u001enote=string:tab\there, newline\nhere, return\rhere, backslash \\ and \\N, quote \" and ' and ünïcödé\u001eratio=number:0.25\u001ewhole=number:2\u001f1768477980040\u001f5ba9000000000000\u001fserver\u001funset\u001f\u001fnoted@1768477980001{count=number:-7\u001eempty=string:\u001eflag=boolean:false\u001enot_finite=null:\u001enote=string:tab\there, newline\nhere, return\rhere, backslash \\ and \\N, quote \" and ' and ünïcödé\u001eratio=number:0.25\u001ewhole=number:2}",
+        "1768478100000\u001fc0de0000000000000000000000000010-5ba9000000000010\u001f\\N\u001fcorpus.rules.three_parts\u001f\\N\u001fcorpus\u001f\\N\u001f\\N\u001fc0de0000000000000000000000000010\u001f5ba9000000000010\u001fbc.telemetry.log=string:corpus.rules.three_parts\u001ebc.telemetry.schema_version=number:1\u001f1768478100040\u001f5ba9000000000000\u001fserver\u001funset\u001f\u001fnoted@1768478100001{bc.telemetry.log=string:corpus.rules.three_parts\u001ebc.telemetry.schema_version=number:1}",
+        "1768478160000\u001fc0de0000000000000000000000000011-5ba9000000000011\u001f\\N\u001f.no_module\u001f\\N\u001fcorpus\u001f\\N\u001f\\N\u001fc0de0000000000000000000000000011\u001f5ba9000000000011\u001fbc.telemetry.log=string:.no_module\u001ebc.telemetry.schema_version=number:1\u001f1768478160040\u001f5ba9000000000000\u001fserver\u001funset\u001f\u001fnoted@1768478160001{bc.telemetry.log=string:.no_module\u001ebc.telemetry.schema_version=number:1}",
+        "1768478220000\u001fc0de0000000000000000000000000012-5ba9000000000012\u001f\\N\u001fno_item.\u001f\\N\u001fcorpus\u001f\\N\u001f\\N\u001fc0de0000000000000000000000000012\u001f5ba9000000000012\u001fbc.telemetry.log=string:no_item.\u001ebc.telemetry.schema_version=number:1\u001f1768478220040\u001f5ba9000000000000\u001fserver\u001funset\u001f\u001fnoted@1768478220001{bc.telemetry.log=string:no_item.\u001ebc.telemetry.schema_version=number:1}",
+        "1768478280000\u001fc0de0000000000000000000000000013-5ba9000000000013\u001fby_hand\u001fdeclared\u001f1\u001fcorpus\u001f\\N\u001f\\N\u001fc0de0000000000000000000000000013\u001f5ba9000000000013\u001fbc.telemetry.log=string:by_hand.declared\u001f1768478280040\u001f5ba9000000000000\u001fserver\u001funset\u001f\u001fnoted@1768478280001{bc.telemetry.log=string:by_hand.declared\u001ebc.telemetry.schema_version=number:1}"
+      ]
+    },
+    {
+      "name": "telemetry.metrics",
+      "query": "SELECT line FROM (SELECT concat_ws(E'\\x1f', (extract(epoch FROM time) * 1000)::bigint, record_id, coalesce(module, '\\N'), name, coalesce(schema_version::text, '\\N'), service_name, coalesce(organization, '\\N'), coalesce(customer, '\\N'), coalesce(trace_id, '\\N'), coalesce(span_id, '\\N'), (SELECT coalesce(string_agg(entry.key || '=' || jsonb_typeof(entry.value) || ':' || CASE jsonb_typeof(entry.value) WHEN 'number' THEN ((entry.value #>> '{}')::double precision)::text WHEN 'null' THEN '' ELSE entry.value #>> '{}' END, E'\\x1e' ORDER BY entry.key COLLATE \"C\"), '') FROM jsonb_each(attributes) AS entry), kind, value::text) AS line FROM telemetry.metrics) AS lines ORDER BY line COLLATE \"C\"",
+      "rows": [
+        "1768474799999\u001f0b5e0000000000000000000000000001-39\u001f\\N\u001fcorpus.rules.another_tenants_customer\u001f\\N\u001fcorpus\u001f\\N\u001fcustomer-erased\u001fc0de00000000000000000000000000ff\u001f5ba90000000000ff\u001f\u001fgauge\u001f0.5",
+        "1768474800001\u001f0b5e0000000000000000000000000001-38\u001f\\N\u001fcorpus.rules.after_the_erasure\u001f\\N\u001fcorpus\u001fcorpus-org\u001fcustomer-erased\u001fc0de00000000000000000000000000ff\u001f5ba90000000000ff\u001f\u001fgauge\u001f0.5",
+        "1768477200000\u001f0b5e0000000000000000000000000001-1\u001fledger\u001fentries_posted\u001f1\u001fcorpus\u001fcorpus-org\u001fcustomer-kept\u001f\\N\u001f\\N\u001f\u001fcounter\u001f1",
+        "1768477200000\u001f0b5e0000000000000000000000000001-10\u001fpayments\u001fresponse_size\u001f1\u001fcorpus\u001fcorpus-org\u001fcustomer-kept\u001f\\N\u001f\\N\u001f\u001fhistogram\u001f120.5",
+        "1768477200000\u001f0b5e0000000000000000000000000001-13\u001fpayments\u001fsettlement_duration\u001f1\u001fcorpus\u001fcorpus-org\u001fcustomer-kept\u001f\\N\u001f\\N\u001fprocessor=string:processor-0\u001fhistogram\u001f120.5",
+        "1768477200000\u001f0b5e0000000000000000000000000001-22\u001fstore_server\u001fcart_size\u001f1\u001fcorpus\u001fcorpus-org\u001fcustomer-kept\u001f\\N\u001f\\N\u001froute=string:route-0\u001fgauge\u001f3.5",
+        "1768477200000\u001f0b5e0000000000000000000000000001-25\u001fstore_server\u001forders_placed\u001f1\u001fcorpus\u001fcorpus-org\u001fcustomer-kept\u001f\\N\u001f\\N\u001f\u001fcounter\u001f1",
+        "1768477200000\u001f0b5e0000000000000000000000000001-28\u001fstore_server\u001frequest_duration\u001f1\u001fcorpus\u001fcorpus-org\u001fcustomer-kept\u001f\\N\u001f\\N\u001froute=string:route-0\u001estatus=number:1\u001fhistogram\u001f120.5",
+        "1768477200000\u001f0b5e0000000000000000000000000001-7\u001fpayments\u001fcapture_success\u001f1\u001fcorpus\u001fcorpus-org\u001fcustomer-kept\u001f\\N\u001f\\N\u001f\u001fgauge\u001f3.5",
+        "1768477500000\u001f0b5e0000000000000000000000000001-11\u001fpayments\u001fresponse_size\u001f1\u001fcorpus\u001fcorpus-org\u001f\\N\u001f\\N\u001f\\N\u001f\u001fhistogram\u001f130.5",
+        "1768477500000\u001f0b5e0000000000000000000000000001-14\u001fpayments\u001fsettlement_duration\u001f1\u001fcorpus\u001fcorpus-org\u001f\\N\u001f\\N\u001f\\N\u001fprocessor=string:processor-1\u001fhistogram\u001f130.5",
+        "1768477500000\u001f0b5e0000000000000000000000000001-2\u001fledger\u001fentries_posted\u001f1\u001fcorpus\u001fcorpus-org\u001f\\N\u001f\\N\u001f\\N\u001f\u001fcounter\u001f2",
+        "1768477500000\u001f0b5e0000000000000000000000000001-23\u001fstore_server\u001fcart_size\u001f1\u001fcorpus\u001fcorpus-org\u001f\\N\u001f\\N\u001f\\N\u001froute=string:route-1\u001fgauge\u001f4.5",
+        "1768477500000\u001f0b5e0000000000000000000000000001-26\u001fstore_server\u001forders_placed\u001f1\u001fcorpus\u001fcorpus-org\u001f\\N\u001f\\N\u001f\\N\u001f\u001fcounter\u001f2",
+        "1768477500000\u001f0b5e0000000000000000000000000001-29\u001fstore_server\u001frequest_duration\u001f1\u001fcorpus\u001fcorpus-org\u001f\\N\u001f\\N\u001f\\N\u001froute=string:route-1\u001estatus=number:2\u001fhistogram\u001f130.5",
+        "1768477500000\u001f0b5e0000000000000000000000000001-8\u001fpayments\u001fcapture_success\u001f1\u001fcorpus\u001fcorpus-org\u001f\\N\u001f\\N\u001f\\N\u001f\u001fgauge\u001f4.5",
+        "1768477800000\u001f0b5e0000000000000000000000000001-12\u001fpayments\u001fresponse_size\u001f1\u001fcorpus\u001fcorpus-org\u001f\\N\u001f\\N\u001f\\N\u001f\u001fhistogram\u001f140.5",
+        "1768477800000\u001f0b5e0000000000000000000000000001-15\u001fpayments\u001fsettlement_duration\u001f1\u001fcorpus\u001fcorpus-org\u001f\\N\u001f\\N\u001f\\N\u001fprocessor=string:processor-0\u001fhistogram\u001f140.5",
+        "1768477800000\u001f0b5e0000000000000000000000000001-24\u001fstore_server\u001fcart_size\u001f1\u001fcorpus\u001fcorpus-org\u001f\\N\u001f\\N\u001f\\N\u001froute=string:route-0\u001fgauge\u001f5.5",
+        "1768477800000\u001f0b5e0000000000000000000000000001-27\u001fstore_server\u001forders_placed\u001f1\u001fcorpus\u001fcorpus-org\u001f\\N\u001f\\N\u001f\\N\u001f\u001fcounter\u001f3",
+        "1768477800000\u001f0b5e0000000000000000000000000001-3\u001fledger\u001fentries_posted\u001f1\u001fcorpus\u001fcorpus-org\u001f\\N\u001f\\N\u001f\\N\u001f\u001fcounter\u001f3",
+        "1768477800000\u001f0b5e0000000000000000000000000001-30\u001fstore_server\u001frequest_duration\u001f1\u001fcorpus\u001fcorpus-org\u001f\\N\u001f\\N\u001f\\N\u001froute=string:route-0\u001estatus=number:3\u001fhistogram\u001f140.5",
+        "1768477800000\u001f0b5e0000000000000000000000000001-9\u001fpayments\u001fcapture_success\u001f1\u001fcorpus\u001fcorpus-org\u001f\\N\u001f\\N\u001f\\N\u001f\u001fgauge\u001f5.5",
+        "1768477860000\u001f0b5e0000000000000000000000000001-34\u001f\\N\u001fcorpus.rules.undeclared\u001f\\N\u001fanother-service\u001f\\N\u001f\\N\u001fc0de00000000000000000000000000ff\u001f5ba90000000000ff\u001froute=string:/health\u001fgauge\u001f0.5",
+        "1768477920000\u001f0b5e0000000000000000000000000001-44\u001f\\N\u001fcorpus.rules.repeated_key\u001f\\N\u001fcorpus\u001f\\N\u001f\\N\u001fc0de00000000000000000000000000ff\u001f5ba90000000000ff\u001fnote=string:second\u001fgauge\u001f0.5",
+        "1768477980000\u001f0b5e0000000000000000000000000001-45\u001f\\N\u001fcorpus.rules.awkward_text\u001f\\N\u001fcorpus\u001f\\N\u001f\\N\u001fc0de00000000000000000000000000ff\u001f5ba90000000000ff\u001fcount=number:-7\u001eempty=string:\u001eflag=boolean:false\u001enot_finite=null:\u001enote=string:tab\there, newline\nhere, return\rhere, backslash \\ and \\N, quote \" and ' and ünïcödé\u001eratio=number:0.25\u001ewhole=number:2\u001fgauge\u001f0.5",
+        "1768478040000\u001f0b5e0000000000000000000000000001-47\u001f\\N\u001fcorpus.rules.value_is_a_boolean\u001f\\N\u001fcorpus\u001f\\N\u001f\\N\u001f\\N\u001f\\N\u001f\u001fgauge\u001f1",
+        "1768478100000\u001f0b5e0000000000000000000000000001-40\u001f\\N\u001fcorpus.rules.three_parts\u001f\\N\u001fcorpus\u001f\\N\u001f\\N\u001fc0de00000000000000000000000000ff\u001f5ba90000000000ff\u001fbc.telemetry.log=string:corpus.rules.three_parts\u001ebc.telemetry.schema_version=number:1\u001fgauge\u001f0.5",
+        "1768478160000\u001f0b5e0000000000000000000000000001-41\u001f\\N\u001f.no_module\u001f\\N\u001fcorpus\u001f\\N\u001f\\N\u001fc0de00000000000000000000000000ff\u001f5ba90000000000ff\u001fbc.telemetry.log=string:.no_module\u001ebc.telemetry.schema_version=number:1\u001fgauge\u001f0.5",
+        "1768478220000\u001f0b5e0000000000000000000000000001-42\u001f\\N\u001fno_item.\u001f\\N\u001fcorpus\u001f\\N\u001f\\N\u001fc0de00000000000000000000000000ff\u001f5ba90000000000ff\u001fbc.telemetry.log=string:no_item.\u001ebc.telemetry.schema_version=number:1\u001fgauge\u001f0.5",
+        "1768478280000\u001f0b5e0000000000000000000000000001-43\u001fby_hand\u001fdeclared\u001f1\u001fcorpus\u001f\\N\u001f\\N\u001fc0de00000000000000000000000000ff\u001f5ba90000000000ff\u001fbc.telemetry.log=string:by_hand.declared\u001fgauge\u001f0.5"
+      ]
+    },
+    {
+      "name": "telemetry.logs",
+      "query": "SELECT line FROM (SELECT concat_ws(E'\\x1f', (extract(epoch FROM time) * 1000)::bigint, record_id, coalesce(module, '\\N'), name, coalesce(schema_version::text, '\\N'), service_name, coalesce(organization, '\\N'), coalesce(customer, '\\N'), coalesce(trace_id, '\\N'), coalesce(span_id, '\\N'), (SELECT coalesce(string_agg(entry.key || '=' || jsonb_typeof(entry.value) || ':' || CASE jsonb_typeof(entry.value) WHEN 'number' THEN ((entry.value #>> '{}')::double precision)::text WHEN 'null' THEN '' ELSE entry.value #>> '{}' END, E'\\x1e' ORDER BY entry.key COLLATE \"C\"), '') FROM jsonb_each(attributes) AS entry), severity, body) AS line FROM telemetry.logs) AS lines ORDER BY line COLLATE \"C\"",
+      "rows": [
+        "1768474799999\u001f0b5e0000000000000000000000000001-55\u001f\\N\u001f\u001f\\N\u001fcorpus\u001f\\N\u001fcustomer-erased\u001fc0de00000000000000000000000000ff\u001f5ba90000000000ff\u001f\u001finfo\u001fcorpus.rules.another_tenants_customer: tab\there, newline\nhere, return\rhere, backslash \\ and \\N, quote \" and ' and ünïcödé",
+        "1768474800001\u001f0b5e0000000000000000000000000001-54\u001f\\N\u001f\u001f\\N\u001fcorpus\u001fcorpus-org\u001fcustomer-erased\u001fc0de00000000000000000000000000ff\u001f5ba90000000000ff\u001f\u001finfo\u001fcorpus.rules.after_the_erasure: tab\there, newline\nhere, return\rhere, backslash \\ and \\N, quote \" and ' and ünïcödé",
+        "1768477200000\u001f0b5e0000000000000000000000000001-16\u001fpayments\u001fprocessor_timeout\u001f1\u001fcorpus\u001fcorpus-org\u001fcustomer-kept\u001f\\N\u001f\\N\u001fprocessor=string:processor-0\u001ewaited=number:250\u001fwarn\u001fThe processor did not answer in time",
+        "1768477200000\u001f0b5e0000000000000000000000000001-19\u001fpayments\u001fauthorization_declined\u001f1\u001fcorpus\u001fcorpus-org\u001fcustomer-kept\u001f\\N\u001f\\N\u001ferror.category=string:payments\u001eerror.kind=number:1\u001eorder_id=string:order_id-0\u001eprocessor_code=string:processor_code-0\u001ferror\u001fThe processor declined the authorization",
+        "1768477200000\u001f0b5e0000000000000000000000000001-31\u001fstore_server\u001forder_failed\u001f1\u001fcorpus\u001fcorpus-org\u001fcustomer-kept\u001f\\N\u001f\\N\u001forder_id=string:order_id-0\u001ereason=string:reason-0\u001ferror\u001fAn order that reached checkout and did not complete",
+        "1768477200000\u001f0b5e0000000000000000000000000001-4\u001fledger\u001fentry_posted\u001f1\u001fcorpus\u001fcorpus-org\u001fcustomer-kept\u001f\\N\u001f\\N\u001faccount=string:account-0\u001finfo\u001fA ledger entry was posted",
+        "1768477500000\u001f0b5e0000000000000000000000000001-17\u001fpayments\u001fprocessor_timeout\u001f1\u001fcorpus\u001fcorpus-org\u001f\\N\u001f\\N\u001f\\N\u001fprocessor=string:processor-1\u001ewaited=number:500\u001fwarn\u001fThe processor did not answer in time",
+        "1768477500000\u001f0b5e0000000000000000000000000001-20\u001fpayments\u001fauthorization_declined\u001f1\u001fcorpus\u001fcorpus-org\u001f\\N\u001f\\N\u001f\\N\u001ferror.category=string:payments\u001eerror.kind=number:1\u001eorder_id=string:order_id-1\u001eprocessor_code=string:processor_code-1\u001ferror\u001fThe processor declined the authorization",
+        "1768477500000\u001f0b5e0000000000000000000000000001-32\u001fstore_server\u001forder_failed\u001f1\u001fcorpus\u001fcorpus-org\u001f\\N\u001f\\N\u001f\\N\u001forder_id=string:order_id-1\u001ereason=string:reason-1\u001ferror\u001fAn order that reached checkout and did not complete",
+        "1768477500000\u001f0b5e0000000000000000000000000001-5\u001fledger\u001fentry_posted\u001f1\u001fcorpus\u001fcorpus-org\u001f\\N\u001f\\N\u001f\\N\u001faccount=string:account-1\u001finfo\u001fA ledger entry was posted",
+        "1768477800000\u001f0b5e0000000000000000000000000001-18\u001fpayments\u001fprocessor_timeout\u001f1\u001fcorpus\u001fcorpus-org\u001f\\N\u001f\\N\u001f\\N\u001fprocessor=string:processor-0\u001ewaited=number:750\u001fwarn\u001fThe processor did not answer in time",
+        "1768477800000\u001f0b5e0000000000000000000000000001-21\u001fpayments\u001fauthorization_declined\u001f1\u001fcorpus\u001fcorpus-org\u001f\\N\u001f\\N\u001f\\N\u001ferror.category=string:payments\u001eerror.kind=number:1\u001eorder_id=string:order_id-0\u001eprocessor_code=string:processor_code-0\u001fwarn\u001fThe processor declined the authorization",
+        "1768477800000\u001f0b5e0000000000000000000000000001-33\u001fstore_server\u001forder_failed\u001f1\u001fcorpus\u001fcorpus-org\u001f\\N\u001f\\N\u001f\\N\u001forder_id=string:order_id-0\u001ereason=string:reason-0\u001ferror\u001fAn order that reached checkout and did not complete",
+        "1768477800000\u001f0b5e0000000000000000000000000001-6\u001fledger\u001fentry_posted\u001f1\u001fcorpus\u001fcorpus-org\u001f\\N\u001f\\N\u001f\\N\u001faccount=string:account-0\u001finfo\u001fA ledger entry was posted",
+        "1768477860000\u001f0b5e0000000000000000000000000001-50\u001f\\N\u001f\u001f\\N\u001fanother-service\u001f\\N\u001f\\N\u001fc0de00000000000000000000000000ff\u001f5ba90000000000ff\u001froute=string:/health\u001finfo\u001fcorpus.rules.undeclared: tab\there, newline\nhere, return\rhere, backslash \\ and \\N, quote \" and ' and ünïcödé",
+        "1768477920000\u001f0b5e0000000000000000000000000001-60\u001f\\N\u001f\u001f\\N\u001fcorpus\u001f\\N\u001f\\N\u001fc0de00000000000000000000000000ff\u001f5ba90000000000ff\u001fnote=string:second\u001finfo\u001fcorpus.rules.repeated_key: tab\there, newline\nhere, return\rhere, backslash \\ and \\N, quote \" and ' and ünïcödé",
+        "1768477980000\u001f0b5e0000000000000000000000000001-61\u001f\\N\u001f\u001f\\N\u001fcorpus\u001f\\N\u001f\\N\u001fc0de00000000000000000000000000ff\u001f5ba90000000000ff\u001fcount=number:-7\u001eempty=string:\u001eflag=boolean:false\u001enot_finite=null:\u001enote=string:tab\there, newline\nhere, return\rhere, backslash \\ and \\N, quote \" and ' and ünïcödé\u001eratio=number:0.25\u001ewhole=number:2\u001finfo\u001fcorpus.rules.awkward_text: tab\there, newline\nhere, return\rhere, backslash \\ and \\N, quote \" and ' and ünïcödé",
+        "1768478100000\u001f0b5e0000000000000000000000000001-56\u001f\\N\u001fcorpus.rules.three_parts\u001f\\N\u001fcorpus\u001f\\N\u001f\\N\u001fc0de00000000000000000000000000ff\u001f5ba90000000000ff\u001fbc.telemetry.log=string:corpus.rules.three_parts\u001ebc.telemetry.schema_version=number:1\u001finfo\u001fcorpus.rules.three_parts: tab\there, newline\nhere, return\rhere, backslash \\ and \\N, quote \" and ' and ünïcödé",
+        "1768478160000\u001f0b5e0000000000000000000000000001-57\u001f\\N\u001f.no_module\u001f\\N\u001fcorpus\u001f\\N\u001f\\N\u001fc0de00000000000000000000000000ff\u001f5ba90000000000ff\u001fbc.telemetry.log=string:.no_module\u001ebc.telemetry.schema_version=number:1\u001finfo\u001f.no_module: tab\there, newline\nhere, return\rhere, backslash \\ and \\N, quote \" and ' and ünïcödé",
+        "1768478220000\u001f0b5e0000000000000000000000000001-58\u001f\\N\u001fno_item.\u001f\\N\u001fcorpus\u001f\\N\u001f\\N\u001fc0de00000000000000000000000000ff\u001f5ba90000000000ff\u001fbc.telemetry.log=string:no_item.\u001ebc.telemetry.schema_version=number:1\u001finfo\u001fno_item.: tab\there, newline\nhere, return\rhere, backslash \\ and \\N, quote \" and ' and ünïcödé",
+        "1768478280000\u001f0b5e0000000000000000000000000001-59\u001fby_hand\u001fdeclared\u001f1\u001fcorpus\u001f\\N\u001f\\N\u001fc0de00000000000000000000000000ff\u001f5ba90000000000ff\u001f\u001finfo\u001fby_hand.declared: tab\there, newline\nhere, return\rhere, backslash \\ and \\N, quote \" and ' and ünïcödé"
+      ]
+    },
+    {
+      "name": "telemetry.metric__ledger__entries_posted",
+      "query": "SELECT line FROM (SELECT concat_ws(E'\\x1f', (extract(epoch FROM time) * 1000)::bigint, service_name, coalesce(organization, '\\N'), coalesce(customer, '\\N'), coalesce(trace_id, '\\N'), coalesce(span_id, '\\N'), value::text) AS line FROM telemetry.\"metric__ledger__entries_posted\") AS lines ORDER BY line COLLATE \"C\"",
+      "rows": [
+        "1768477200000\u001fcorpus\u001fcorpus-org\u001fcustomer-kept\u001f\\N\u001f\\N\u001f1",
+        "1768477500000\u001fcorpus\u001fcorpus-org\u001f\\N\u001f\\N\u001f\\N\u001f2",
+        "1768477800000\u001fcorpus\u001fcorpus-org\u001f\\N\u001f\\N\u001f\\N\u001f3"
+      ]
+    },
+    {
+      "name": "telemetry.log__ledger__entry_posted",
+      "query": "SELECT line FROM (SELECT concat_ws(E'\\x1f', (extract(epoch FROM time) * 1000)::bigint, service_name, coalesce(organization, '\\N'), coalesce(customer, '\\N'), coalesce(trace_id, '\\N'), coalesce(span_id, '\\N'), severity, body, coalesce(\"account\"::text, '\\N')) AS line FROM telemetry.\"log__ledger__entry_posted\") AS lines ORDER BY line COLLATE \"C\"",
+      "rows": [
+        "1768477200000\u001fcorpus\u001fcorpus-org\u001fcustomer-kept\u001f\\N\u001f\\N\u001finfo\u001fA ledger entry was posted\u001faccount-0",
+        "1768477500000\u001fcorpus\u001fcorpus-org\u001f\\N\u001f\\N\u001f\\N\u001finfo\u001fA ledger entry was posted\u001faccount-1",
+        "1768477800000\u001fcorpus\u001fcorpus-org\u001f\\N\u001f\\N\u001f\\N\u001finfo\u001fA ledger entry was posted\u001faccount-0"
+      ]
+    },
+    {
+      "name": "telemetry.span__payments__authorize",
+      "query": "SELECT line FROM (SELECT concat_ws(E'\\x1f', (extract(epoch FROM time) * 1000)::bigint, service_name, coalesce(organization, '\\N'), coalesce(customer, '\\N'), coalesce(trace_id, '\\N'), coalesce(span_id, '\\N'), (extract(epoch FROM end_time) * 1000)::bigint, duration_ms::text, kind, status, status_message, coalesce(\"processor\"::text, '\\N')) AS line FROM telemetry.\"span__payments__authorize\") AS lines ORDER BY line COLLATE \"C\"",
+      "rows": [
+        "1768477200000\u001fcorpus\u001fcorpus-org\u001fcustomer-kept\u001fc0de0000000000000000000000000001\u001f5ba9000000000001\u001f1768477200125\u001f125\u001fclient\u001fok\u001f\u001fprocessor-0",
+        "1768477500000\u001fcorpus\u001fcorpus-org\u001f\\N\u001fc0de0000000000000000000000000002\u001f5ba9000000000002\u001f1768477500125\u001f125\u001fclient\u001funset\u001f\u001fprocessor-1",
+        "1768477800000\u001fcorpus\u001fcorpus-org\u001f\\N\u001fc0de0000000000000000000000000003\u001f5ba9000000000003\u001f1768477800125\u001f125\u001fclient\u001ferror\u001ffailed\u001fprocessor-0"
+      ]
+    },
+    {
+      "name": "telemetry.metric__payments__capture_success",
+      "query": "SELECT line FROM (SELECT concat_ws(E'\\x1f', (extract(epoch FROM time) * 1000)::bigint, service_name, coalesce(organization, '\\N'), coalesce(customer, '\\N'), coalesce(trace_id, '\\N'), coalesce(span_id, '\\N'), value::text) AS line FROM telemetry.\"metric__payments__capture_success\") AS lines ORDER BY line COLLATE \"C\"",
+      "rows": [
+        "1768477200000\u001fcorpus\u001fcorpus-org\u001fcustomer-kept\u001f\\N\u001f\\N\u001f3.5",
+        "1768477500000\u001fcorpus\u001fcorpus-org\u001f\\N\u001f\\N\u001f\\N\u001f4.5",
+        "1768477800000\u001fcorpus\u001fcorpus-org\u001f\\N\u001f\\N\u001f\\N\u001f5.5"
+      ]
+    },
+    {
+      "name": "telemetry.metric__payments__response_size",
+      "query": "SELECT line FROM (SELECT concat_ws(E'\\x1f', (extract(epoch FROM time) * 1000)::bigint, service_name, coalesce(organization, '\\N'), coalesce(customer, '\\N'), coalesce(trace_id, '\\N'), coalesce(span_id, '\\N'), value::text) AS line FROM telemetry.\"metric__payments__response_size\") AS lines ORDER BY line COLLATE \"C\"",
+      "rows": [
+        "1768477200000\u001fcorpus\u001fcorpus-org\u001fcustomer-kept\u001f\\N\u001f\\N\u001f120.5",
+        "1768477500000\u001fcorpus\u001fcorpus-org\u001f\\N\u001f\\N\u001f\\N\u001f130.5",
+        "1768477800000\u001fcorpus\u001fcorpus-org\u001f\\N\u001f\\N\u001f\\N\u001f140.5"
+      ]
+    },
+    {
+      "name": "telemetry.metric__payments__settlement_duration",
+      "query": "SELECT line FROM (SELECT concat_ws(E'\\x1f', (extract(epoch FROM time) * 1000)::bigint, service_name, coalesce(organization, '\\N'), coalesce(customer, '\\N'), coalesce(trace_id, '\\N'), coalesce(span_id, '\\N'), value::text, coalesce(\"processor\"::text, '\\N')) AS line FROM telemetry.\"metric__payments__settlement_duration\") AS lines ORDER BY line COLLATE \"C\"",
+      "rows": [
+        "1768477200000\u001fcorpus\u001fcorpus-org\u001fcustomer-kept\u001f\\N\u001f\\N\u001f120.5\u001fprocessor-0",
+        "1768477500000\u001fcorpus\u001fcorpus-org\u001f\\N\u001f\\N\u001f\\N\u001f130.5\u001fprocessor-1",
+        "1768477800000\u001fcorpus\u001fcorpus-org\u001f\\N\u001f\\N\u001f\\N\u001f140.5\u001fprocessor-0"
+      ]
+    },
+    {
+      "name": "telemetry.log__payments__processor_timeout",
+      "query": "SELECT line FROM (SELECT concat_ws(E'\\x1f', (extract(epoch FROM time) * 1000)::bigint, service_name, coalesce(organization, '\\N'), coalesce(customer, '\\N'), coalesce(trace_id, '\\N'), coalesce(span_id, '\\N'), severity, body, coalesce(\"processor\"::text, '\\N'), coalesce(\"waited\"::text, '\\N')) AS line FROM telemetry.\"log__payments__processor_timeout\") AS lines ORDER BY line COLLATE \"C\"",
+      "rows": [
+        "1768477200000\u001fcorpus\u001fcorpus-org\u001fcustomer-kept\u001f\\N\u001f\\N\u001fwarn\u001fThe processor did not answer in time\u001fprocessor-0\u001f250",
+        "1768477500000\u001fcorpus\u001fcorpus-org\u001f\\N\u001f\\N\u001f\\N\u001fwarn\u001fThe processor did not answer in time\u001fprocessor-1\u001f500",
+        "1768477800000\u001fcorpus\u001fcorpus-org\u001f\\N\u001f\\N\u001f\\N\u001fwarn\u001fThe processor did not answer in time\u001fprocessor-0\u001f750"
+      ]
+    },
+    {
+      "name": "telemetry.error__payments__authorization_declined",
+      "query": "SELECT line FROM (SELECT concat_ws(E'\\x1f', (extract(epoch FROM time) * 1000)::bigint, service_name, coalesce(organization, '\\N'), coalesce(customer, '\\N'), coalesce(trace_id, '\\N'), coalesce(span_id, '\\N'), severity, body, coalesce(\"order_id\"::text, '\\N'), coalesce(\"processor_code\"::text, '\\N')) AS line FROM telemetry.\"error__payments__authorization_declined\") AS lines ORDER BY line COLLATE \"C\"",
+      "rows": [
+        "1768477200000\u001fcorpus\u001fcorpus-org\u001fcustomer-kept\u001f\\N\u001f\\N\u001ferror\u001fThe processor declined the authorization\u001forder_id-0\u001fprocessor_code-0",
+        "1768477500000\u001fcorpus\u001fcorpus-org\u001f\\N\u001f\\N\u001f\\N\u001ferror\u001fThe processor declined the authorization\u001forder_id-1\u001fprocessor_code-1",
+        "1768477800000\u001fcorpus\u001fcorpus-org\u001f\\N\u001f\\N\u001f\\N\u001fwarn\u001fThe processor declined the authorization\u001forder_id-0\u001fprocessor_code-0"
+      ]
+    },
+    {
+      "name": "telemetry.span__store_server__checkout",
+      "query": "SELECT line FROM (SELECT concat_ws(E'\\x1f', (extract(epoch FROM time) * 1000)::bigint, service_name, coalesce(organization, '\\N'), coalesce(customer, '\\N'), coalesce(trace_id, '\\N'), coalesce(span_id, '\\N'), (extract(epoch FROM end_time) * 1000)::bigint, duration_ms::text, kind, status, status_message, coalesce(\"cart_id\"::text, '\\N'), coalesce(\"item_count\"::text, '\\N')) AS line FROM telemetry.\"span__store_server__checkout\") AS lines ORDER BY line COLLATE \"C\"",
+      "rows": [
+        "1768477200000\u001fcorpus\u001fcorpus-org\u001fcustomer-kept\u001fc0de0000000000000000000000000004\u001f5ba9000000000004\u001f1768477200125\u001f125\u001fserver\u001fok\u001f\u001fcart_id-0\u001f1",
+        "1768477500000\u001fcorpus\u001fcorpus-org\u001f\\N\u001fc0de0000000000000000000000000005\u001f5ba9000000000005\u001f1768477500125\u001f125\u001fserver\u001funset\u001f\u001fcart_id-1\u001f2",
+        "1768477800000\u001fcorpus\u001fcorpus-org\u001f\\N\u001fc0de0000000000000000000000000006\u001f5ba9000000000006\u001f1768477800125\u001f125\u001fserver\u001ferror\u001ffailed\u001fcart_id-0\u001f3"
+      ]
+    },
+    {
+      "name": "telemetry.span__store_server__refund",
+      "query": "SELECT line FROM (SELECT concat_ws(E'\\x1f', (extract(epoch FROM time) * 1000)::bigint, service_name, coalesce(organization, '\\N'), coalesce(customer, '\\N'), coalesce(trace_id, '\\N'), coalesce(span_id, '\\N'), (extract(epoch FROM end_time) * 1000)::bigint, duration_ms::text, kind, status, status_message, coalesce(\"amount\"::text, '\\N'), coalesce(\"order_id\"::text, '\\N'), coalesce(\"partial\"::text, '\\N'), coalesce(\"settle_time\"::text, '\\N')) AS line FROM telemetry.\"span__store_server__refund\") AS lines ORDER BY line COLLATE \"C\"",
+      "rows": [
+        "1768477200000\u001fcorpus\u001fcorpus-org\u001fcustomer-kept\u001fc0de0000000000000000000000000007\u001f5ba9000000000007\u001f1768477200125\u001f125\u001finternal\u001fok\u001f\u001f12.5\u001fdigest-0\u001ftrue\u001f250",
+        "1768477500000\u001fcorpus\u001fcorpus-org\u001f\\N\u001fc0de0000000000000000000000000008\u001f5ba9000000000008\u001f1768477500125\u001f125\u001finternal\u001funset\u001f\u001f13.5\u001fdigest-1\u001ffalse\u001f500",
+        "1768477800000\u001fcorpus\u001fcorpus-org\u001f\\N\u001fc0de0000000000000000000000000009\u001f5ba9000000000009\u001f1768477800125\u001f125\u001finternal\u001ferror\u001ffailed\u001f14.5\u001fdigest-0\u001ftrue\u001f750"
+      ]
+    },
+    {
+      "name": "telemetry.metric__store_server__cart_size",
+      "query": "SELECT line FROM (SELECT concat_ws(E'\\x1f', (extract(epoch FROM time) * 1000)::bigint, service_name, coalesce(organization, '\\N'), coalesce(customer, '\\N'), coalesce(trace_id, '\\N'), coalesce(span_id, '\\N'), value::text, coalesce(\"route\"::text, '\\N')) AS line FROM telemetry.\"metric__store_server__cart_size\") AS lines ORDER BY line COLLATE \"C\"",
+      "rows": [
+        "1768477200000\u001fcorpus\u001fcorpus-org\u001fcustomer-kept\u001f\\N\u001f\\N\u001f3.5\u001froute-0",
+        "1768477500000\u001fcorpus\u001fcorpus-org\u001f\\N\u001f\\N\u001f\\N\u001f4.5\u001froute-1",
+        "1768477800000\u001fcorpus\u001fcorpus-org\u001f\\N\u001f\\N\u001f\\N\u001f5.5\u001froute-0"
+      ]
+    },
+    {
+      "name": "telemetry.metric__store_server__orders_placed",
+      "query": "SELECT line FROM (SELECT concat_ws(E'\\x1f', (extract(epoch FROM time) * 1000)::bigint, service_name, coalesce(organization, '\\N'), coalesce(customer, '\\N'), coalesce(trace_id, '\\N'), coalesce(span_id, '\\N'), value::text) AS line FROM telemetry.\"metric__store_server__orders_placed\") AS lines ORDER BY line COLLATE \"C\"",
+      "rows": [
+        "1768477200000\u001fcorpus\u001fcorpus-org\u001fcustomer-kept\u001f\\N\u001f\\N\u001f1",
+        "1768477500000\u001fcorpus\u001fcorpus-org\u001f\\N\u001f\\N\u001f\\N\u001f2",
+        "1768477800000\u001fcorpus\u001fcorpus-org\u001f\\N\u001f\\N\u001f\\N\u001f3"
+      ]
+    },
+    {
+      "name": "telemetry.metric__store_server__request_duration",
+      "query": "SELECT line FROM (SELECT concat_ws(E'\\x1f', (extract(epoch FROM time) * 1000)::bigint, service_name, coalesce(organization, '\\N'), coalesce(customer, '\\N'), coalesce(trace_id, '\\N'), coalesce(span_id, '\\N'), value::text, coalesce(\"route\"::text, '\\N'), coalesce(\"status\"::text, '\\N')) AS line FROM telemetry.\"metric__store_server__request_duration\") AS lines ORDER BY line COLLATE \"C\"",
+      "rows": [
+        "1768477200000\u001fcorpus\u001fcorpus-org\u001fcustomer-kept\u001f\\N\u001f\\N\u001f120.5\u001froute-0\u001f1",
+        "1768477500000\u001fcorpus\u001fcorpus-org\u001f\\N\u001f\\N\u001f\\N\u001f130.5\u001froute-1\u001f2",
+        "1768477800000\u001fcorpus\u001fcorpus-org\u001f\\N\u001f\\N\u001f\\N\u001f140.5\u001froute-0\u001f3"
+      ]
+    },
+    {
+      "name": "telemetry.log__store_server__order_failed",
+      "query": "SELECT line FROM (SELECT concat_ws(E'\\x1f', (extract(epoch FROM time) * 1000)::bigint, service_name, coalesce(organization, '\\N'), coalesce(customer, '\\N'), coalesce(trace_id, '\\N'), coalesce(span_id, '\\N'), severity, body, coalesce(\"order_id\"::text, '\\N'), coalesce(\"reason\"::text, '\\N')) AS line FROM telemetry.\"log__store_server__order_failed\") AS lines ORDER BY line COLLATE \"C\"",
+      "rows": [
+        "1768477200000\u001fcorpus\u001fcorpus-org\u001fcustomer-kept\u001f\\N\u001f\\N\u001ferror\u001fAn order that reached checkout and did not complete\u001forder_id-0\u001freason-0",
+        "1768477500000\u001fcorpus\u001fcorpus-org\u001f\\N\u001f\\N\u001f\\N\u001ferror\u001fAn order that reached checkout and did not complete\u001forder_id-1\u001freason-1",
+        "1768477800000\u001fcorpus\u001fcorpus-org\u001f\\N\u001f\\N\u001f\\N\u001ferror\u001fAn order that reached checkout and did not complete\u001forder_id-0\u001freason-0"
+      ]
+    }
+  ]
+}

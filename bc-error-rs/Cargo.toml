@@ -1,0 +1,58 @@
+[package]
+name = "bc-error-rs"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+license.workspace = true
+description = "Structured error values ported from bourgeois_concern"
+readme = "README.md"
+keywords = ["error", "metadata", "diagnostics"]
+categories = ["rust-patterns"]
+include = [
+    "/src/**",
+    "/tests/**",
+    "/Cargo.toml",
+    "/LICENSE.txt",
+    "/README.md",
+]
+
+[lib]
+name = "bc_error"
+path = "src/lib.rs"
+
+[features]
+default = []
+# Machine-readable representation for `MetadataValue` / `AnyError`. Off by
+# default so the crate stays third-party-free for consumers that only need the
+# human diagnostic.
+serde = ["dep:serde"]
+# The UniFFI binding, so a Swift or Kotlin application can depend on this crate
+# directly. Off by default for the same reason `serde` is; enabling it pulls
+# dozens of transitive crates.
+#
+# `default-features = false` on the dependency is load-bearing: uniffi's default
+# `cargo-metadata` feature pulls `cargo_metadata`, which requires rustc 1.86 and
+# hard-fails this crate's 1.85 pin. Those crates belong to the *generator*, which
+# runs on its own toolchain, not to the runtime a bound crate links.
+uniffi = ["dep:uniffi"]
+
+[dependencies]
+# The process's assertion handler, which attaching an invariant breach reports
+# to — as the C++ `bc_error` links `bc::core` for `with_invariant_breach_fact`.
+# First-party and itself dependency-free, so the default build still carries no
+# third-party code (`scripts/verify.sh`'s dependency guard).
+bc-core-rs = { workspace = true }
+serde = { version = "1", features = ["derive"], optional = true }
+uniffi = { version = "0.32.0", optional = true, default-features = false }
+
+# Verifying that the `serde` feature actually round-trips needs a concrete data
+# format. Dev-dependencies never reach a consumer's dependency graph, so this
+# does not weaken the third-party-free guarantee that scripts/verify.sh enforces
+# over `cargo tree --edges normal`.
+[dev-dependencies]
+serde_json = "1"
+
+# The workspace's one lint policy (the root Cargo.toml), so the IDE and `cargo clippy` read the rules CI enforces.
+[lints]
+workspace = true

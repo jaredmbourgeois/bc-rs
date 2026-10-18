@@ -1,0 +1,49 @@
+[package]
+name = "bc-telemetry-gen"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+license.workspace = true
+description = "Generates typed telemetry SDKs, backend queries, and dashboards from one bc-telemetry definition file"
+readme = "README.md"
+
+[lib]
+name = "bc_telemetry_gen"
+path = "src/lib.rs"
+
+# The binary is argv in, the library's `run` out — every behavior it has is the
+# library's and is tested there, so it carries no test harness of its own (an
+# empty one would be a compiled test binary that collects nothing).
+[[bin]]
+name = "bc-telemetry-gen"
+path = "src/main.rs"
+test = false
+
+[dependencies]
+# The kinds the definition's vocabulary is closed over — `MetricKind` and
+# `Severity` — are this crate's own, so a definition cannot name a kind the
+# runtime lacks.
+bc-telemetry-rs = { workspace = true }
+# The JSON front end reads through the family's strict validator, which refuses
+# duplicate keys and reports byte positions; the manifest is written with its
+# writer.
+bc-json-rs = { workspace = true }
+# The conformance corpus spells each record's instant as the layout stores it, and the
+# family has one way to say when.
+bc-date-time-rs = { workspace = true }
+# The dashboard model that both declarative dashboards and the Rust builder
+# render through, and the unit set a metric's `unit` names.
+bc-telemetry-dashboard = { workspace = true }
+# Every key and value keeps its byte span, which is what a `file:line:column`
+# diagnostic needs. Parse only — the generator never writes TOML.
+toml_edit = { version = "0.25", default-features = false, features = ["parse"] }
+
+[dev-dependencies]
+# The Rust adapter's smoke compiles the generated modules into the suite, and
+# they emit onto the runtime above and build their errors with bc-error-rs, so
+# the suite names it as a consumer of the generated code would.
+bc-error-rs = { workspace = true }
+
+[lints]
+workspace = true

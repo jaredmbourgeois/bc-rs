@@ -1,0 +1,75 @@
+[package]
+name = "bc-telemetry-rs"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+license.workspace = true
+description = "OTel-shaped tracing, metrics, and log records with a pluggable exporter, ported from bourgeois_concern"
+readme = "README.md"
+keywords = ["telemetry", "tracing", "opentelemetry", "observability", "metrics"]
+categories = ["development-tools::debugging"]
+include = [
+    "/src/**",
+    "/tests/**",
+    "/Cargo.toml",
+    "/LICENSE.txt",
+    "/README.md",
+]
+
+[lib]
+name = "bc_telemetry"
+path = "src/lib.rs"
+
+[features]
+default = []
+# Batched asynchronous export on tokio. Off by default, and that is load-bearing
+# rather than tidy: a one-shot process — a command-line tool's single
+# invocation — exits after one operation and cannot host a batching task, so
+# the synchronous flush-on-drop path below is the *default* export mode, not a
+# fallback. It also keeps tokio out of the closure of a consumer that does not
+# run it.
+batched = ["dep:tokio"]
+# OTLP over HTTP. New surface — the C++ original has no network exporter.
+otlp = ["dep:ureq"]
+# The PostgreSQL exporter. Also new surface.
+postgres = ["dep:postgres"]
+
+[dependencies]
+# The family's canonical time type. Not optional: a `Pipeline` holds an
+# `EpochSource` and every span, metric point, and log record carries an `Epoch`.
+bc-date-time-rs = { workspace = true }
+# `encode_hex` / `decode_hex_into`, which the C++ `types.cpp` and
+# `propagation.cpp` reach for by the same names. Writing a second hex codec for
+# trace ids would be duplicating a primitive this family already owns. And the
+# process's assertion handler, which a misuse of the span API is reported to, as
+# the C++ `context.cpp` reports through `bc::core`'s.
+bc-core-rs = { workspace = true }
+# The family's error vocabulary, which `error_telemetry` records: an error's
+# identity and its structured facts, ported beside the C++ `error_telemetry`
+# that reads them from `bc_error`. It was already in the closure through
+# bc-json-rs; it is named because this crate now reads it itself.
+bc-error-rs = { workspace = true }
+# The file exporter's line-delimited JSON is a versioned surface that readers
+# depend on, and a second JSON escaper is exactly the primitive that must not be
+# rewritten. bc-json-rs is the family's writer.
+bc-json-rs = { workspace = true }
+# Trace and span ids. The C++ `random.cpp` fills them from the OS CSPRNG
+# (`arc4random_buf` / `getrandom` / `BCryptGenRandom`), which Rust cannot reach
+# without `unsafe`; this crate forbids it. `getrandom` is that call, per
+# platform, and is the crate the whole ecosystem's randomness bottoms out in.
+# It is wrapped behind the injectable `IdSource` seam, so a test never depends
+# on it and a consumer can replace it.
+getrandom = "0.3"
+
+tokio = { version = "1", features = ["rt", "sync", "time"], optional = true, default-features = false }
+# Default features kept, deliberately. They carry the rustls TLS stack, and an
+# OTLP collector reached over https is the ordinary deployment — turning them off
+# would shrink the closure by making the exporter unable to talk to most
+# collectors, which is not a saving. Reachable only with the `otlp` feature, so a
+# consumer that never asks for a network exporter never links any of it.
+ureq = { version = "3", optional = true }
+postgres = { version = "0.19", optional = true }
+
+[lints]
+workspace = true

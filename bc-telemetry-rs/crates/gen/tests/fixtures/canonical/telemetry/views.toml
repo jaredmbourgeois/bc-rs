@@ -1,0 +1,80 @@
+[module]
+name = "store_server"
+schema_version = 1
+
+[log.order_failed]
+description = "An order that reached checkout and did not complete"
+level = "error"
+fields = { order_id = "string", reason = "string" }
+
+[query.checkout-p95]
+description = "95th-percentile request latency per route over five minutes"
+measure = "metric.request_duration"
+aggregation = "p95"
+window = "5m"
+group_by = ["route"]
+
+[query.orders-per-second]
+description = "Orders placed per second"
+measure = "metric.orders_placed"
+aggregation = "rate"
+window = "30s"
+
+[query.cart-size-avg]
+description = "Average cart size at checkout"
+measure = "metric.cart_size"
+aggregation = "avg"
+window = "5m"
+
+[query.checkout-rate]
+description = "Checkouts started per second"
+measure = "span.checkout"
+aggregation = "rate"
+window = "1m"
+
+[query.failed-orders]
+description = "Failed orders per hour, by reason"
+measure = "log.order_failed"
+aggregation = "count"
+window = "1h"
+group_by = ["reason"]
+
+[query.declines-by-processor]
+description = "Declined authorizations per day, by the processor's code"
+measure = "error.payments.authorization_declined"
+aggregation = "count"
+window = "1d"
+group_by = ["processor_code"]
+
+[dashboard.checkout-health]
+title = "Checkout health"
+
+[[dashboard.checkout-health.panel]]
+title = "p95 latency by route"
+query = "query.checkout-p95"
+render = "timeseries"
+
+[[dashboard.checkout-health.panel]]
+title = "Orders per second"
+query = "query.orders-per-second"
+render = "stat"
+
+[[dashboard.checkout-health.panel]]
+title = "Failed orders by reason"
+query = "query.failed-orders"
+render = "table"
+
+[[dashboard.checkout-health.panel]]
+title = "p90 settlement time"
+query = "query.payments.settlement-p90"
+render = "timeseries"
+
+[[dashboard.checkout-health.panel]]
+title = "Failed orders"
+query = "log.order_failed"
+render = "logs"
+
+[[dashboard.checkout-health.panel]]
+title = "Declined authorizations"
+query = "error.payments.authorization_declined"
+render = "logs"

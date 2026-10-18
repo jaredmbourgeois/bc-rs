@@ -1,0 +1,102 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  # Daily, for the newest stable's lints alone (the last step): a release that moves
+  # reddens the default branch here, never somebody's push.
+  schedule:
+    - cron: '37 5 * * *'
+
+jobs:
+  # One job per toolchain, each running scripts/verify.sh, which takes every member in dependency order and prints a
+  # verdict line per member. Not a member-by-toolchain matrix: the runner runs one job at a time, so a matrix would
+  # only queue, and each of its jobs would rebuild the members it shares.
+  verify:
+    runs-on: ubuntu-latest
+    # Measured on a warm 12-core Mac: the whole pipeline takes about 9 minutes (every member, nothing skipped); a
+    # runner's cold build of the nine packages, debug and release, takes several times that. The bound is for a hang,
+    # not for a slow build.
+    timeout-minutes: 60
+    # The minimum supported Rust version and one pinned stable, never the moving channel: a release that moves under
+    # the tree would redden every push for lints in code the push never touched. The pin moves in one commit with that
+    # release's lint fixes.
+    strategy:
+      fail-fast: false
+      matrix:
+        rust: ["1.85.0", "1.99.0"]
+    env:
+      # Overrides rust-toolchain.toml, which pins local builds to the minimum supported version.
+      RUSTUP_TOOLCHAIN: ${{ matrix.rust }}
+    steps:
+      - name: Check out bc-rs
+        uses: https://code.forgejo.org/actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          path: bc-rs
+          persist-credentials: false
+
+      # Before anything is built, so a runner missing a program the tests run fails in seconds with its Debian
+      # package named.
+      - name: Check host programs
+        working-directory: bc-rs/bc-telemetry-rs
+        run: scripts/check-test-host-programs.sh
+
+      - name: Install Rust
+        run: rustup toolchain install "$RUSTUP_TOOLCHAIN" --profile minimal --component clippy,rustfmt
+
+      - name: Install the wasm32 target
+        run: rustup target add wasm32-unknown-unknown
+
+      # Building nextest from source takes minutes and would happen on every leg of every run. Keyed on the pinned
+      # version so a bump busts it; pinned by commit like every action here (v4.3.0).
+      - name: Cache cargo
+        uses: https://code.forgejo.org/actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
+        with:
+          path: |
+            ~/.cargo/bin/cargo-nextest
+            ~/.cargo/registry/index
+            ~/.cargo/registry/cache
+            bc-rs/target
+          key: cargo-${{ matrix.rust }}-nextest0.9.100-${{ hashFiles('bc-rs/Cargo.lock') }}
+          restore-keys: |
+            cargo-${{ matrix.rust }}-nextest0.9.100-
+
+      - name: Install nextest
+        run: |
+          if ! command -v cargo-nextest >/dev/null 2>&1; then
+            cargo install --locked cargo-nextest --version 0.9.100
+          fi
+
+      # The pipeline itself lives in scripts/verify.sh so it is defined once and the tracked IDE run configurations
+      # execute exactly what CI executes. The skips it accepts are these, each saying why; any other skip ends the run
+      # INCOMPLETE, and an accepted tier that runs anyway fails it until its line here goes.
+      - name: Verify
+        if: github.event_name != 'schedule'
+        working-directory: bc-rs
+        run: >-
+          scripts/verify.sh
+          --accept-skip "typescript=the runner has no TypeScript SDK fetched"
+          --accept-skip "grafana=the runner holds no pinned Grafana"
+          --accept-skip "bindings-kotlin=the runner carries no Kotlin toolchain"
+          --accept-skip "bash-floor=a Linux runner has no bash 3.2; every macOS run holds the floor under /bin/bash"
+
+      # Every member's package, as `cargo package` would assemble it for its own publish. Only CI can ask this: a
+      # working tree mid-edit is dirty, and `cargo package` refuses a dirty tree.
+      - name: Verify every member's package
+        if: github.event_name != 'schedule'
+        working-directory: bc-rs
+        run: cargo package --workspace --list --locked
+
+      # The newest stable's lints, on the schedule alone and on the minimum-version leg alone, the leg that moves
+      # least. The steps above lint on the pinned toolchains, so a push is red only for what it changed; a new
+      # release's lints move under the tree, so they redden this run, and the pin moves in one commit carrying that
+      # release's fixes.
+      - name: Lint with the newest stable toolchain
+        if: ${{ github.event_name == 'schedule' && matrix.rust == '1.85.0' }}
+        working-directory: bc-rs
+        env:
+          RUSTUP_TOOLCHAIN: stable
+        run: |
+          rustup toolchain install stable --profile minimal --component clippy
+          rustc --version
+          cargo clippy --locked --workspace --all-targets --all-features -- -D warnings

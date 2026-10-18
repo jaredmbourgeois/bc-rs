@@ -1,0 +1,20 @@
+{
+  "span": {
+    "refund": {
+      "attributes": {
+        "settle_time": "duration",
+        "partial": "bool",
+        "amount": "float",
+        "order_id": "digest"
+      },
+      "description": "A refund, from request to settlement"
+    },
+    "checkout": {
+      "kind": "server",
+      "events": ["inventory_reserved", "payment_authorized"],
+      "attributes": { "item_count": "int", "cart_id": "string" },
+      "description": "One checkout flow, cart to confirmation"
+    }
+  },
+  "module": { "schema_version": 1, "name": "store_server" }
+}

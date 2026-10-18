@@ -1,0 +1,26 @@
+[package]
+name = "bc-nodular-tokio"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+publish.workspace = true
+license.workspace = true
+description = "Tokio driver for the runtime-neutral bc-nodular-architecture-rs stepping API"
+readme = "README.md"
+
+[lib]
+name = "bc_nodular_tokio"
+path = "src/lib.rs"
+
+[dependencies]
+bc-nodular-architecture-rs = { workspace = true }
+tokio = { workspace = true }
+
+[dev-dependencies]
+bc-date-time-rs = { workspace = true }
+# Inherits the workspace definition and adds only what the tests need on top,
+# so the runtime is spelled out in exactly one place.
+tokio = { workspace = true, features = ["time"] }
+
+[lints]
+workspace = true

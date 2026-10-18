@@ -1,0 +1,19 @@
+[error.account_closed]
+fields = { metadata = "string", account = "string" }
+code = 1
+class = "refusal"
+description = "The entry names an account that is closed"
+
+[log.entry_posted]
+fields = { account = "string" }
+level = "info"
+description = "A ledger entry was posted"
+
+[metric.entries_posted]
+unit = "none"
+type = "counter"
+description = "Ledger entries posted"
+
+[module]
+schema_version = 1
+name = "ledger"

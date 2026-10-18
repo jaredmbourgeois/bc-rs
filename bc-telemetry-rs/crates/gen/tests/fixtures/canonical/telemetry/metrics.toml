@@ -1,0 +1,20 @@
+[module]
+name = "store_server"
+schema_version = 1
+
+[metric.request_duration]
+description = "Server-side request latency"
+type = "histogram"
+unit = "ms"
+attributes = { route = "string", status = "int" }
+
+[metric.orders_placed]
+description = "Orders that reached confirmation"
+type = "counter"
+unit = "none"
+
+[metric.cart_size]
+description = "Items in the cart at checkout"
+type = "gauge"
+unit = "none"
+attributes = { route = "string" }
